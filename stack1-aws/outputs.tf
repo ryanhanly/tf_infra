@@ -1,4 +1,4 @@
-resource "aws_route_table_association" "linux_rta" {
-    subnet_id = aws_subnet.linux_subnet.id
-    route_table_id = aws_route_table.linux_rt.id
+output "srv_ub_01_public_ip" {
+    description = "Public IP for srv_ub_01"
+    value       = aws_instance.srv_ub_01.public_ip
 }

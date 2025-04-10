@@ -47,3 +47,16 @@ resource "aws_security_group" "linux_sg" {
     }
     tags = { Name = "linux-sg" }
 }
+
+resource "aws_instance" "srv_ub_01" {
+    ami             = "ami-0a94c8e4ca2674d5a"
+    instance_type   = "t2.micro"
+    subnet_id       = aws_subnet.linux_subnet.id
+
+    security_groups = [aws_security_group.linux_sg.name]
+    key_name        = var.key_name
+
+    tags = {
+        Name = "srv_ub_01"
+    }
+}
