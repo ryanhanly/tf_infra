@@ -1,5 +1,62 @@
-variable aws_region {
+variable "aws_region" {
   type        = string
   default     = "eu-west-2"
   description = "AWS Region for deploying resources"
+}
+
+variable "name_prefix" {
+  type        = string
+  default     = "linux"
+  description = "Prefix for naming resources"
+}
+
+variable "vpc_cidr" {
+  type        = string
+  default     = "10.0.0.0/16"
+  description = "CIDR block for the VPC"
+}
+
+variable "subnet_cidr" {
+  type        = string
+  default     = "10.0.1.0/24"
+  description = "CIDR block for the subnet"
+}
+
+variable "ssh_allowed_cidr" {
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "CIDR blocks allowed for SSH access (restrict in production)"
+}
+
+variable "key_name" {
+  type        = string
+  default     = "srv-ub-key"
+  description = "Name of the key pair to use for SSH access"
+}
+
+variable "server_instances" {
+  type = map(object({
+    ami_id          = string
+    instance_type   = string
+    index           = number
+    additional_tags = map(string)
+  }))
+  description = "Map of servers to create with their configurations"
+
+  default = {
+    # This maintains your original server
+    "server1" = {
+      ami_id          = "ami-0a94c8e4ca2674d5a"
+      instance_type   = "t2.micro"
+      index           = 1
+      additional_tags = {}
+    }
+    # Example of adding another server
+    # "server2" = {
+    #   ami_id          = "ami-0a94c8e4ca2674d5a"
+    #   instance_type   = "t2.micro"
+    #   index           = 2
+    #   additional_tags = { "Purpose" = "Testing" }
+    # }
+  }
 }
