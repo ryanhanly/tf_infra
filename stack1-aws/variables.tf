@@ -52,11 +52,18 @@ variable "server_instances" {
       additional_tags = {}
     }
     # Example of adding another server
-    # "server2" = {
-    #   ami_id          = "ami-0a94c8e4ca2674d5a"
-    #   instance_type   = "t2.micro"
-    #   index           = 2
-    #   additional_tags = { "Purpose" = "Testing" }
-    # }
+    "server2" = {
+      ami_id          = "ami-0a94c8e4ca2674d5a"
+      instance_type   = "t2.micro"
+      index           = 2
+      additional_tags = { "Purpose" = "Testing" }
+    }
+    # Example of adding another server
+    "server3" = {
+      ami_id          = "ami-0a94c8e4ca2674d5a"
+      instance_type   = "t2.micro"
+      index           = 3
+      additional_tags = { "Purpose" = "Testing" }
+    }
   }
 }
