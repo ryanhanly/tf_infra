@@ -1,0 +1,27 @@
+azure_region = "East US"
+resource_group_name = "terraform-learning-rg"
+
+# Define multiple VMs by adding more entries to this map
+virtual_machines = {
+  "vm-ubuntu-01" = {
+    vm_size        = "Standard_B1s"
+    admin_username = "azureadmin"
+    ssh_public_key = "~/.ssh/id_rsa.pub"
+    os_disk_type   = "Standard_LRS"
+    tags = {
+      Name = "vm_ubuntu_01"
+      Environment = "Development"
+    }
+  },
+  "vm-ubuntu-02" = {
+    vm_size        = "Standard_B1s"
+    admin_username = "azureadmin"
+    ssh_public_key = "~/.ssh/id_rsa.pub"
+    os_disk_type   = "Standard_LRS"
+    tags = {
+      Name = "vm_ubuntu_02"
+      Environment = "Development"
+    }
+  }
+  # You can add more VMs as needed
+}
