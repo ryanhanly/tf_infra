@@ -1,3 +1,13 @@
+terraform {
+  backend "s3" {
+    bucket         = "stack1-terraform-states"
+    key            = "stack1/terraform.tfstate"
+    region         = "eu-west-2"
+    dynamodb_table = "terraform-locks"
+    encrypt        = true
+  }
+}
+
 provider "aws" {
     region = var.aws_region
 }
@@ -67,12 +77,12 @@ locals {
   # Extract OS shortname from AMI description (e.g., "ubuntu" -> "ub")
   server_os_types = {
     for k, ami in data.aws_ami.server_ami : k => (
-      contains(lower(ami.description), "ubuntu") ? "ub" :
-      contains(lower(ami.description), "amazon linux") ? "al" :
-      contains(lower(ami.description), "centos") ? "ct" :
-      contains(lower(ami.description), "debian") ? "db" :
-      contains(lower(ami.description), "fedora") ? "fc" :
-      contains(lower(ami.description), "red hat") ? "rh" :
+      can(regex("ubuntu", lower(ami.description))) ? "ub" :
+      can(regex("amazon linux", lower(ami.description))) ? "al" :
+      can(regex("centos", lower(ami.description))) ? "ct" :
+      can(regex("debian", lower(ami.description))) ? "db" :
+      can(regex("fedora", lower(ami.description))) ? "fc" :
+      can(regex("red hat", lower(ami.description))) ? "rh" :
       "lx" # default for unknown Linux
     )
   }
