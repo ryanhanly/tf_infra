@@ -36,7 +36,7 @@ resource "aws_security_group" "linux_sg" {
     ingress {
         from_port   = 22
         to_port     = 22
-        protocol    = tcp
+        protocol    = "tcp"
         cidr_blocks = ["0.0.0.0/0"] # Restrict to only you IP in production
     }
     egress {
@@ -49,12 +49,11 @@ resource "aws_security_group" "linux_sg" {
 }
 
 resource "aws_instance" "srv_ub_01" {
-    ami             = "ami-0a94c8e4ca2674d5a"
-    instance_type   = "t2.micro"
-    subnet_id       = aws_subnet.linux_subnet.id
-
-    security_groups = [aws_security_group.linux_sg.name]
-    key_name        = var.key_name
+    ami                   = "ami-0a94c8e4ca2674d5a"
+    instance_type         = "t2.micro"
+    subnet_id             = aws_subnet.linux_subnet.id
+    vpc_security_group_ids = [aws_security_group.linux_sg.id]
+    key_name               = "srv-ub-key" # Must match the key pair name in AWS
 
     tags = {
         Name = "srv_ub_01"
