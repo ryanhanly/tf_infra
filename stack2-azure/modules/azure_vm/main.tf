@@ -1,58 +1,58 @@
-# Public IP
-resource "azurerm_public_ip" "vm_public_ip" {
-  name                = "${var.name}-public-ip"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-  allocation_method   = "Dynamic"
+# modules/azure_vm/main.tf
+
+# Generate a new SSH key pair
+resource "tls_private_key" "ssh_key" {
+  algorithm = "RSA"
+  rsa_bits  = 4096
 }
 
-# Network Interface
-resource "azurerm_network_interface" "vm_nic" {
-  name                = "${var.name}-nic"
-  location            = var.location
-  resource_group_name = var.resource_group_name
-
-  ip_configuration {
-    name                          = "internal"
-    subnet_id                     = var.subnet_id
-    private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.vm_public_ip.id
-  }
+# Create resource group (if not already defined elsewhere)
+resource "azurerm_resource_group" "rg" {
+  name     = var.resource_group_name
+  location = var.location
 }
 
-# Connect the security group to the network interface
-resource "azurerm_network_interface_security_group_association" "nsg_association" {
-  network_interface_id      = azurerm_network_interface.vm_nic.id
-  network_security_group_id = var.nsg_id
-}
+# Define your existing networking resources here or reference them
 
-# Linux Virtual Machine
+# Create the Linux VM with the generated SSH key
 resource "azurerm_linux_virtual_machine" "vm" {
-  name                = var.name
-  resource_group_name = var.resource_group_name
-  location            = var.location
+  name                = var.vm_name
+  resource_group_name = azurerm_resource_group.rg.name
+  location            = azurerm_resource_group.rg.location
   size                = var.vm_size
   admin_username      = var.admin_username
   network_interface_ids = [
-    azurerm_network_interface.vm_nic.id,
+    var.network_interface_id,  # This should be defined or referenced from elsewhere
   ]
 
   admin_ssh_key {
     username   = var.admin_username
-    public_key = file(var.ssh_public_key)
+    public_key = tls_private_key.ssh_key.public_key_openssh
   }
 
   os_disk {
     caching              = "ReadWrite"
-    storage_account_type = var.os_disk_type
+    storage_account_type = "Standard_LRS"
   }
 
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-focal"
-    sku       = "20_04-lts"
-    version   = "latest"
+    publisher = var.image_publisher
+    offer     = var.image_offer
+    sku       = var.image_sku
+    version   = var.image_version
   }
 
   tags = var.tags
+}
+
+# Optional: Save the SSH private key to a local file for easy access
+resource "local_file" "private_key" {
+  content  = tls_private_key.ssh_key.private_key_pem
+  filename = "${path.module}/ssh_keys/${var.vm_name}_key.pem"
+  file_permission = "0600"
+
+  # Make sure the directory exists
+  provisioner "local-exec" {
+    command = "mkdir -p ${path.module}/ssh_keys"
+  }
 }
