@@ -47,7 +47,19 @@ variable "infprefix" {
   description = "Prefix for naming hosts resource"
 }
 
-# Map of virtual machines to create
+variable "admin_username" {
+  type     = string
+  default  = "azureadmin"
+  description = "Standard Admin Username"
+}
+
+variable "environment" {
+  type     = string
+  default  = "development"
+  description = "Define the operating environment"
+}
+
+# Define an empty linux_vm variable or one with minimal defaults
 variable "linux_vm" {
   type = map(object({
     vm_size        = string
@@ -56,17 +68,6 @@ variable "linux_vm" {
     os_disk_type   = string
     tags           = map(string)
   }))
-  default = {
-    "vm-ubuntu-01" = {
-      vm_size        = "Standard_B1s"
-      admin_username = "azureadmin"
-      ssh_public_key = "~/.ssh/id_rsa.pub"
-      os_disk_type   = "Standard_LRS"
-      tags = {
-        Name = "vm_ubuntu_01"
-        Environment = "Development"
-      }
-    }
-  }
+  default = {}
   description = "Map of virtual machines to create with their configurations"
 }
