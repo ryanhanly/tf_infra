@@ -1,22 +1,5 @@
 # main.tf (root module)
 
-terraform {
-  required_providers {
-    azurerm = {
-      source  = "hashicorp/azurerm"
-      version = "~> 3.0"
-    }
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.0"
-    }
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.4"
-    }
-  }
-}
-
 provider "azurerm" {
   features {}
 }
@@ -29,7 +12,7 @@ resource "azurerm_resource_group" "rg" {
 
 # Create a virtual network
 resource "azurerm_virtual_network" "vnet" {
-  name                = "${var.prefix}-vnet"
+  name                = "${var.infprefix}-vnet"
   address_space       = ["10.0.0.0/16"]
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
@@ -37,7 +20,7 @@ resource "azurerm_virtual_network" "vnet" {
 
 # Create a subnet
 resource "azurerm_subnet" "subnet" {
-  name                 = "${var.prefix}-subnet"
+  name                 = "${var.infprefix}-subnet"
   resource_group_name  = azurerm_resource_group.rg.name
   virtual_network_name = azurerm_virtual_network.vnet.name
   address_prefixes     = ["10.0.1.0/24"]
@@ -45,7 +28,7 @@ resource "azurerm_subnet" "subnet" {
 
 # Create a public IP
 resource "azurerm_public_ip" "public_ip" {
-  name                = "${var.prefix}-pip"
+  name                = "${var.infprefix}-pip"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
@@ -53,7 +36,7 @@ resource "azurerm_public_ip" "public_ip" {
 
 # Create a network security group
 resource "azurerm_network_security_group" "nsg" {
-  name                = "${var.prefix}-nsg"
+  name                = "${var.infprefix}-nsg"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -73,7 +56,7 @@ resource "azurerm_network_security_group" "nsg" {
 
 # Create a network interface
 resource "azurerm_network_interface" "nic" {
-  name                = "${var.prefix}-nic"
+  name                = "${var.infprefix}-nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -97,7 +80,7 @@ module "linux_vm" {
 
   resource_group_name  = azurerm_resource_group.rg.name
   location             = azurerm_resource_group.rg.location
-  vm_name              = "${var.prefix}-vm"
+  vm_name              = "${var.srvprefix}-vm"
   network_interface_id = azurerm_network_interface.nic.id
   admin_username       = var.admin_username
 

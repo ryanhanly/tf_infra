@@ -23,7 +23,7 @@ variable "tenant_id" {
   description = "Azure tenant ID"
 }
 
-variable "azure_region" {
+variable "location" {
   type        = string
   default     = "UK South"
   description = "Azure Region for deploying resources"
@@ -31,12 +31,24 @@ variable "azure_region" {
 
 variable "resource_group_name" {
   type        = string
-  default     = "terraform-learning-rg"
+  default     = "tf-iac-rg"
   description = "Name of the resource group"
 }
 
+variable "srvprefix" {
+  type     = string
+  default  = "tf_srv"
+  description = "Prefix for naming hosts resource"
+}
+
+variable "infprefix" {
+  type     = string
+  default  = "tf_inf"
+  description = "Prefix for naming hosts resource"
+}
+
 # Map of virtual machines to create
-variable "virtual_machines" {
+variable "linux_vm" {
   type = map(object({
     vm_size        = string
     admin_username = string

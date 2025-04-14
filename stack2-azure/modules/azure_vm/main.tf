@@ -1,5 +1,6 @@
 # modules/azure_vm/main.tf
 
+
 # Generate a new SSH key pair
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
