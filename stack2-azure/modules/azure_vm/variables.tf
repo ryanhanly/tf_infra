@@ -1,53 +1,63 @@
-variable "name" {
-  type        = string
-  description = "Name of the virtual machine"
-}
+# modules/azure_vm/variables.tf
 
 variable "resource_group_name" {
-  type        = string
   description = "Name of the resource group"
+  type        = string
 }
 
 variable "location" {
+  description = "Azure region for the resources"
   type        = string
-  description = "Azure region where resources will be created"
 }
 
-variable "subnet_id" {
+variable "vm_name" {
+  description = "Name of the virtual machine"
   type        = string
-  description = "ID of the subnet where the VM will be connected"
-}
-
-variable "nsg_id" {
-  type        = string
-  description = "ID of the network security group"
 }
 
 variable "vm_size" {
-  type        = string
-  default     = "Standard_B1s"
   description = "Size of the virtual machine"
+  type        = string
+  default     = "Standard_B1s"  # Budget-friendly size, adjust as needed
 }
 
 variable "admin_username" {
+  description = "Admin username for the VM"
   type        = string
-  default     = "azureadmin"
-  description = "Username for the VM admin"
+  default     = "azureuser"
 }
 
-variable "ssh_public_key" {
+variable "network_interface_id" {
+  description = "ID of the network interface to attach to the VM"
   type        = string
-  description = "Path to the SSH public key"
 }
 
-variable "os_disk_type" {
+variable "image_publisher" {
+  description = "Publisher of the VM image"
   type        = string
-  default     = "Standard_LRS"
-  description = "Type of OS disk storage"
+  default     = "Canonical"
+}
+
+variable "image_offer" {
+  description = "Offer of the VM image"
+  type        = string
+  default     = "UbuntuServer"
+}
+
+variable "image_sku" {
+  description = "SKU of the VM image"
+  type        = string
+  default     = "18.04-LTS"
+}
+
+variable "image_version" {
+  description = "Version of the VM image"
+  type        = string
+  default     = "latest"
 }
 
 variable "tags" {
+  description = "Tags to apply to the resources"
   type        = map(string)
   default     = {}
-  description = "Tags to apply to resources"
 }
