@@ -2,6 +2,12 @@
 
 provider "azurerm" {
   features {}
+
+  # Uncomment and use these if needed for authentication
+  # subscription_id = var.subscription_id
+  # client_id       = var.client_id
+  # client_secret   = var.client_secret
+  # tenant_id       = var.tenant_id
 }
 
 # Create a resource group
@@ -26,9 +32,10 @@ resource "azurerm_subnet" "subnet" {
   address_prefixes     = ["10.0.1.0/24"]
 }
 
-# Create a public IP
+# Create a public IP for each VM
 resource "azurerm_public_ip" "public_ip" {
-  name                = "${var.infprefix}-pip"
+  for_each            = var.virtual_machines
+  name                = "${var.infprefix}-${each.key}-pip"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
   allocation_method   = "Dynamic"
@@ -54,9 +61,10 @@ resource "azurerm_network_security_group" "nsg" {
   }
 }
 
-# Create a network interface
+# Create a network interface for each VM
 resource "azurerm_network_interface" "nic" {
-  name                = "${var.infprefix}-nic"
+  for_each            = var.virtual_machines
+  name                = "${var.infprefix}-${each.key}-nic"
   location            = azurerm_resource_group.rg.location
   resource_group_name = azurerm_resource_group.rg.name
 
@@ -64,7 +72,7 @@ resource "azurerm_network_interface" "nic" {
     name                          = "internal"
     subnet_id                     = azurerm_subnet.subnet.id
     private_ip_address_allocation = "Dynamic"
-    public_ip_address_id          = azurerm_public_ip.public_ip.id
+    public_ip_address_id          = azurerm_public_ip.public_ip[each.key].id
   }
 }
 
@@ -74,18 +82,23 @@ resource "azurerm_subnet_network_security_group_association" "example" {
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-# Use our VM module with the generated SSH key
+# Use our VM module with the generated SSH key for each VM
 module "linux_vm" {
-  source = "./modules/azure_vm"
+  source   = "./modules/azure_vm"
+  for_each = var.virtual_machines
 
   resource_group_name  = azurerm_resource_group.rg.name
   location             = azurerm_resource_group.rg.location
-  vm_name              = "${var.srvprefix}-vm"
-  network_interface_id = azurerm_network_interface.nic.id
-  admin_username       = var.admin_username
+  vm_name              = "${var.srvprefix}-${each.key}"
+  vm_size              = each.value.vm_size
+  network_interface_id = azurerm_network_interface.nic[each.key].id
+  admin_username       = each.value.admin_username
 
-  tags = {
-    Environment = var.environment
-    Project     = "TerraformLearning"
-  }
+  tags = merge(
+    {
+      Environment = var.environment
+      Project     = "TerraformLearning"
+    },
+    each.value.tags
+  )
 }

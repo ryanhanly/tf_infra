@@ -1,6 +1,7 @@
 variable "ssh_public_key_content" {
   description = "The content of the SSH public key"
   type        = string
+  default     = ""  # Empty default, will be generated if not provided
 }
 
 variable "subscription_id" {
@@ -36,38 +37,44 @@ variable "resource_group_name" {
 }
 
 variable "srvprefix" {
-  type     = string
-  default  = "tf_srv"
-  description = "Prefix for naming hosts resource"
+  type        = string
+  default     = "tf-srv"
+  description = "Prefix for naming server resources"
 }
 
 variable "infprefix" {
-  type     = string
-  default  = "tf_inf"
-  description = "Prefix for naming hosts resource"
+  type        = string
+  default     = "tf-inf"
+  description = "Prefix for naming infrastructure resources"
 }
 
 variable "admin_username" {
-  type     = string
-  default  = "azureadmin"
+  type        = string
+  default     = "azureadmin"
   description = "Standard Admin Username"
 }
 
 variable "environment" {
-  type     = string
-  default  = "development"
+  type        = string
+  default     = "development"
   description = "Define the operating environment"
 }
 
-# Define an empty linux_vm variable or one with minimal defaults
-variable "linux_vm" {
+# Define the virtual_machines variable
+variable "virtual_machines" {
   type = map(object({
     vm_size        = string
     admin_username = string
-    ssh_public_key = string
-    os_disk_type   = string
     tags           = map(string)
   }))
-  default = {}
   description = "Map of virtual machines to create with their configurations"
+  default = {
+    "vm01" = {
+      vm_size        = "Standard_B1s"
+      admin_username = "azureadmin"
+      tags = {
+        Name = "vm_ubuntu_01"
+      }
+    }
+  }
 }
