@@ -89,7 +89,11 @@ module "linux_vm" {
 
   resource_group_name  = azurerm_resource_group.rg.name
   location             = azurerm_resource_group.rg.location
-  vm_name              = "${var.srvprefix}-${each.key}"
+  vm_name              = local.generate_vm_name(
+    "azr",
+    each.value.os_type,  # Using OS type from variable
+    each.value.index     # Using index from variable
+  )
   vm_size              = each.value.vm_size
   network_interface_id = azurerm_network_interface.nic[each.key].id
   admin_username       = each.value.admin_username

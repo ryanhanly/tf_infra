@@ -60,11 +60,13 @@ variable "environment" {
   description = "Define the operating environment"
 }
 
-# Define the virtual_machines variable
+# Define the virtual_machines variable with index field
 variable "virtual_machines" {
   type = map(object({
     vm_size        = string
     admin_username = string
+    index          = number         # New field for VM numbering
+    os_type        = optional(string, "lnx")  # Default to Linux VM
     tags           = map(string)
   }))
   description = "Map of virtual machines to create with their configurations"
@@ -72,6 +74,7 @@ variable "virtual_machines" {
     "vm01" = {
       vm_size        = "Standard_B1s"
       admin_username = "azureadmin"
+      index          = 1
       tags = {
         Name = "vm_ubuntu_01"
       }
