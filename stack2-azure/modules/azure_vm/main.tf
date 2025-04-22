@@ -1,29 +1,20 @@
 # modules/azure_vm/main.tf
 
-
 # Generate a new SSH key pair
 resource "tls_private_key" "ssh_key" {
   algorithm = "RSA"
   rsa_bits  = 4096
 }
 
-# Create resource group (if not already defined elsewhere)
-resource "azurerm_resource_group" "rg" {
-  name     = var.resource_group_name
-  location = var.location
-}
-
-# Define your existing networking resources here or reference them
-
 # Create the Linux VM with the generated SSH key
 resource "azurerm_linux_virtual_machine" "vm" {
   name                = var.vm_name
-  resource_group_name = azurerm_resource_group.rg.name
-  location            = azurerm_resource_group.rg.location
+  resource_group_name = var.resource_group_name  # Just use the provided name, don't create
+  location            = var.location
   size                = var.vm_size
   admin_username      = var.admin_username
   network_interface_ids = [
-    var.network_interface_id,  # This should be defined or referenced from elsewhere
+    var.network_interface_id,
   ]
 
   admin_ssh_key {
