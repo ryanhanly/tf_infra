@@ -99,7 +99,7 @@ resource "aws_instance" "linux_servers" {
 
   tags = merge(
     {
-      Name = "srv_${lookup(local.server_os_types, each.key, "lx")}_${format("%02d", each.value.index)}"
+      Name = "aws-srv-lnx-${format("%02d", each.value.index)}"
     },
     each.value.additional_tags
   )

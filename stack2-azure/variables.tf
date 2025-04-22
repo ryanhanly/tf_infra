@@ -32,19 +32,19 @@ variable "location" {
 
 variable "resource_group_name" {
   type        = string
-  default     = "tf-iac-rg"
+  default     = "azr-iac-rg"
   description = "Name of the resource group"
 }
 
 variable "srvprefix" {
   type        = string
-  default     = "tf-srv"
+  default     = "azr-srv"
   description = "Prefix for naming server resources"
 }
 
 variable "infprefix" {
   type        = string
-  default     = "tf-inf"
+  default     = "azr-inf"
   description = "Prefix for naming infrastructure resources"
 }
 
