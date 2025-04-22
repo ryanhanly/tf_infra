@@ -99,7 +99,8 @@ resource "aws_instance" "linux_servers" {
 
   tags = merge(
     {
-      Name = "aws-srv-lnx-${format("%02d", each.value.index)}"
+      # Use the new naming function with the detected OS type
+      Name = local.generate_vm_name("aws", local.server_os_types[each.key], each.value.index)
     },
     each.value.additional_tags
   )
