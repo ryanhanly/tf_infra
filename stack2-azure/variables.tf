@@ -65,8 +65,7 @@ variable "virtual_machines" {
   type = map(object({
     vm_size        = string
     admin_username = string
-    index          = number         # New field for VM numbering
-    os_type        = optional(string, "lnx")  # Default to Linux VM
+    index          = number         # Add this field for VM numbering
     tags           = map(string)
   }))
   description = "Map of virtual machines to create with their configurations"

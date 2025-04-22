@@ -82,18 +82,16 @@ resource "azurerm_subnet_network_security_group_association" "example" {
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-# Use our VM module with the generated SSH key for each VM
 module "linux_vm" {
   source   = "./modules/azure_vm"
   for_each = var.virtual_machines
 
   resource_group_name  = azurerm_resource_group.rg.name
   location             = azurerm_resource_group.rg.location
-  vm_name              = local.generate_vm_name(
-    "azr",
-    each.value.os_type,  # Using OS type from variable
-    each.value.index     # Using index from variable
-  )
+
+  # Implement naming standard directly
+  vm_name              = "azr-srv-lnx-${format("%02d", each.value.index)}"
+
   vm_size              = each.value.vm_size
   network_interface_id = azurerm_network_interface.nic[each.key].id
   admin_username       = each.value.admin_username
