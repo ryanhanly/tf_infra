@@ -9,55 +9,55 @@ terraform {
 }
 
 provider "aws" {
-    region = var.aws_region
+  region = var.aws_region
 }
 
 resource "aws_vpc" "linux_vpc" {
-    cidr_block = var.vpc_cidr
-    tags       = { Name = "${var.name_prefix}-vpc"}
+  cidr_block = var.vpc_cidr
+  tags       = { Name = "${var.name_prefix}-vpc" }
 }
 
 resource "aws_subnet" "linux_subnet" {
-    vpc_id                  = aws_vpc.linux_vpc.id
-    cidr_block              = var.subnet_cidr
-    map_public_ip_on_launch = true
-    tags                    = { Name = "${var.name_prefix}-subnet"}
+  vpc_id                  = aws_vpc.linux_vpc.id
+  cidr_block              = var.subnet_cidr
+  map_public_ip_on_launch = true
+  tags                    = { Name = "${var.name_prefix}-subnet" }
 }
 
 resource "aws_internet_gateway" "linux_igw" {
-    vpc_id  =   aws_vpc.linux_vpc.id
-    tags    =   { Name = "${var.name_prefix}-igw"}
+  vpc_id = aws_vpc.linux_vpc.id
+  tags   = { Name = "${var.name_prefix}-igw" }
 }
 
 resource "aws_route_table" "linux_rt" {
-    vpc_id = aws_vpc.linux_vpc.id
-    route {
-        cidr_block = "0.0.0.0/0"
-        gateway_id = aws_internet_gateway.linux_igw.id
-    }
-    tags   = { Name = "${var.name_prefix}-rt"}
+  vpc_id = aws_vpc.linux_vpc.id
+  route {
+    cidr_block = "0.0.0.0/0"
+    gateway_id = aws_internet_gateway.linux_igw.id
+  }
+  tags = { Name = "${var.name_prefix}-rt" }
 }
 
 resource "aws_route_table_association" "linux_rta" {
-    subnet_id = aws_subnet.linux_subnet.id
-    route_table_id = aws_route_table.linux_rt.id
+  subnet_id      = aws_subnet.linux_subnet.id
+  route_table_id = aws_route_table.linux_rt.id
 }
 
 resource "aws_security_group" "linux_sg" {
-    vpc_id = aws_vpc.linux_vpc.id
-    ingress {
-        from_port   = 22
-        to_port     = 22
-        protocol    = "tcp"
-        cidr_blocks = var.ssh_allowed_cidr
-    }
-    egress {
-        from_port = 0
-        to_port = 0
-        protocol = "-1"
-        cidr_blocks = ["0.0.0.0/0"]
-    }
-    tags = { Name = "${var.name_prefix}-sg" }
+  vpc_id = aws_vpc.linux_vpc.id
+  ingress {
+    from_port   = 22
+    to_port     = 22
+    protocol    = "tcp"
+    cidr_blocks = var.ssh_allowed_cidr
+  }
+  egress {
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+  tags = { Name = "${var.name_prefix}-sg" }
 }
 
 # Look up AMI information to get OS details
@@ -74,16 +74,9 @@ data "aws_ami" "server_ami" {
 }
 
 locals {
-  # Extract OS shortname from AMI description (e.g., "ubuntu" -> "ub")
   server_os_types = {
     for k, ami in data.aws_ami.server_ami : k => (
-      can(regex("ubuntu", lower(ami.description))) ? "ub" :
-      can(regex("amazon linux", lower(ami.description))) ? "al" :
-      can(regex("centos", lower(ami.description))) ? "ct" :
-      can(regex("debian", lower(ami.description))) ? "db" :
-      can(regex("fedora", lower(ami.description))) ? "fc" :
-      can(regex("red hat", lower(ami.description))) ? "rh" :
-      "lx" # default for unknown Linux
+      can(regex("windows", lower(ami.description))) ? "win" : "lnx"
     )
   }
 }
@@ -99,8 +92,8 @@ resource "aws_instance" "linux_servers" {
 
   tags = merge(
     {
-      # Use the new naming function with the detected OS type
-      Name = local.generate_vm_name("aws", local.server_os_types[each.key], each.value.index)
+      # Implement naming standard directly in the resource
+      Name = "aws-srv-${local.server_os_types[each.key]}-${format("%02d", each.value.index)}"
     },
     each.value.additional_tags
   )
