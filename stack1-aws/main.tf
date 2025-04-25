@@ -6,6 +6,21 @@ terraform {
     dynamodb_table = "terraform-locks"
     encrypt        = true
   }
+
+  required_providers {
+    aws = {
+      source = "hashicorp/aws"
+      version = "~> 4.0"
+    }
+    tls = {
+      source = "hashicorp/tls"
+      version = "~> 4.0"
+    }
+    local = {
+       source = "hashicorp/local"
+      version = "~> 2.4"
+    }
+  }
 }
 
 provider "aws" {
@@ -60,6 +75,27 @@ resource "aws_security_group" "linux_sg" {
   tags = { Name = "${var.name_prefix}-sg" }
 }
 
+resource "tls_private_key" "ssh_key" {
+  algorith = "RSA"
+  rsa_bits = 4096
+}
+
+resource "aws_key_pair" "generated_key" {
+  key_name   = var.key_name
+  public_key = tls_private_key.ssh_key.public_key_openssh
+}
+
+resource "local_file" "private_key" {
+  content         = tls_private_key.ssh_key.private_key_pem
+  filename        = "${path.module}/ssh_keys/${var.key_name}.pem"
+  file_permission = "0600"
+
+  provisioner "local-exec" {
+    command = "mkdir -p ${path.module}/ssh_keys"
+  }
+}
+
+
 # Look up AMI information to get OS details
 data "aws_ami" "server_ami" {
   for_each = var.server_instances
@@ -88,7 +124,7 @@ resource "aws_instance" "linux_servers" {
   instance_type          = each.value.instance_type
   subnet_id              = aws_subnet.linux_subnet.id
   vpc_security_group_ids = [aws_security_group.linux_sg.id]
-  key_name               = var.key_name
+  key_name               = aws_key_pair.generated_key.key_name
 
   tags = merge(
     {
