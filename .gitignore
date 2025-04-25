@@ -1,6 +1,18 @@
+#All below are good practice
 *.tfstate
 *.tfstate.backup
 .terraform/
 terraform.tfvars
 *.log
 */.terraform.lock.hcl
+
+# Private key files
+*.pem
+*_key.pem
+ssh_keys/
+**/ssh_keys/
+
+# Other sensitive files
+*.key
+*id_rsa*
+*id_ed25519*
