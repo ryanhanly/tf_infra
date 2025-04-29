@@ -87,9 +87,7 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
       kb_numbers_to_exclude      = var.windows_kb_to_exclude
     }
 
-    reboot {
-      reboot_setting = var.reboot_setting
-    }
+      reboot_options = var.reboot_setting
   }
 
   tags = var.tags
