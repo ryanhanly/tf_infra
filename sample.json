@@ -1,0 +1,71 @@
+{
+    "$schema": "http://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "maintenanceConfigName": {
+            "type": "string",
+            "metadata": {
+                "description": "This is name of the maintenance config being created."
+            }
+        },
+        "maintenanceConfigLocation": {
+            "type": "string",
+            "metadata": {
+                "description": "This is location of the maintenance config being created."
+            }
+        },
+        "maintenanceSchedule": {
+            "type": "object",
+            "metadata": {
+                "description": "This is schedule information associated with the Maintenance configuration."
+            }
+        },
+        "maintenanceScope": {
+            "type": "string",
+            "metadata": {
+                "description": "Gets or sets maintenanceScope of the configuration."
+            }
+        }
+    },
+    "resources": [
+        {
+            "apiVersion": "2023-04-01",
+            "type": "Microsoft.Maintenance/maintenanceConfigurations",
+            "name": "[parameters('maintenanceConfigName')]",
+            "location": "[parameters('maintenanceConfigLocation')]",
+            "tags": {},
+            "properties": {
+                "maintenanceScope": "InGuestPatch",
+                "installPatches": {
+                    "linuxParameters": {
+                        "classificationsToInclude": [
+                            "Critical",
+                            "Security"
+                        ],
+                        "packageNameMasksToExclude": null,
+                        "packageNameMasksToInclude": null
+                    },
+                    "windowsParameters": {
+                        "classificationsToInclude": [
+                            "Critical",
+                            "Security"
+                        ],
+                        "kbNumbersToExclude": null,
+                        "kbNumbersToInclude": null
+                    },
+                    "rebootSetting": "RebootIfRequired"
+                },
+                "extensionProperties": {
+                    "InGuestPatchMode": "User"
+                },
+                "maintenanceWindow": {
+                    "startDateTime": "2025-04-30 00:00",
+                    "duration": "03:55",
+                    "timeZone": "GMT Standard Time",
+                    "expirationDateTime": null,
+                    "recurEvery": "1Day"
+                }
+            }
+        }
+    ]
+}
