@@ -1,4 +1,4 @@
-# stack3-azure-upd-manager/main.tf
+# azure-update-manager/main.tf
 
 provider "azurerm" {
   features {}
@@ -64,7 +64,7 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
   name                = var.maintenance_config_name
   resource_group_name = azurerm_resource_group.update_mgmt_rg.name
   location            = azurerm_resource_group.update_mgmt_rg.location
-  scope               = "InGuestPatch"
+  maintenance_scope   = "InGuestPatch"
 
   window {
     start_date_time      = var.maintenance_start_time
@@ -75,19 +75,19 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
   }
 
   install_patches {
-    linux {
-      classifications_to_include = var.linux_classifications_to_include
-      package_names_mask_to_include = var.linux_packages_to_include
-      package_names_mask_to_exclude = var.linux_packages_to_exclude
+    linux_parameters {
+      classifications_to_include    = var.linux_classifications_to_include
+      package_name_masks_to_include = var.linux_packages_to_include
+      package_name_masks_to_exclude = var.linux_packages_to_exclude
     }
 
-    windows {
+    windows_parameters {
       classifications_to_include = var.windows_classifications_to_include
       kb_numbers_to_include      = var.windows_kb_to_include
       kb_numbers_to_exclude      = var.windows_kb_to_exclude
     }
 
-      reboot_options = var.reboot_setting
+    reboot_setting = var.reboot_setting
   }
 
   tags = var.tags
