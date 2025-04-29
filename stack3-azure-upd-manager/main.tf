@@ -10,6 +10,11 @@ provider "azurerm" {
   tenant_id       = var.tenant_id
 }
 
+locals {
+  # Handle empty expiration date (converts to null)
+  maintenance_expiration_datetime = var.maintenance_expiration_date != "" ? "${var.maintenance_expiration_date} ${var.maintenance_start_time}" : null
+}
+
 # Resource Group for Update Management
 resource "azurerm_resource_group" "update_mgmt_rg" {
   name     = var.resource_group_name
@@ -66,10 +71,12 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
   location                 = azurerm_resource_group.update_mgmt_rg.location
   scope                    = "InGuestPatch"
   in_guest_user_patch_mode = "User"
+  visibility               = "Custom"
 
   window {
-    start_date_time      = var.maintenance_start_time
-    expiration_date_time = var.maintenance_expiration_time
+    # Use the exact format shown in sample.json: "YYYY-MM-DD HH:MM"
+    start_date_time      = "${var.maintenance_start_date} ${var.maintenance_start_time}"
+    expiration_date_time = var.maintenance_expiration_date != "" ? "${var.maintenance_expiration_date} ${var.maintenance_start_time}" : null
     duration             = var.maintenance_duration
     time_zone            = var.maintenance_timezone
     recur_every          = var.maintenance_recurrence

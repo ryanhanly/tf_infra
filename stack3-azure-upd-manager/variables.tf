@@ -63,18 +63,23 @@ variable "maintenance_config_name" {
   description = "Name of the maintenance configuration"
 }
 
+variable "maintenance_start_date" {
+  type        = string
+  default     = "2025-05-15"  # Just the date portion
+  description = "Start date for maintenance window (YYYY-MM-DD format)"
+}
+
 variable "maintenance_start_time" {
   type        = string
-  default     = "2025-05-01 22:00:00"
-  description = "Start time for maintenance window (RFC3339 format)"
+  default     = "22:00"  # Just the time portion
+  description = "Start time for maintenance window (HH:MM format)"
 }
 
-variable "maintenance_expiration_time" {
+variable "maintenance_expiration_date" {
   type        = string
-  default     = "2026-05-01 22:00:00"
-  description = "Expiration time for maintenance window (RFC3339 format)"
+  default     = "2026-05-15"  # Just the date portion, can be empty for no expiration
+  description = "Expiration date for maintenance window (YYYY-MM-DD format, leave empty for no expiration)"
 }
-
 variable "maintenance_duration" {
   type        = string
   default     = "03:00"
