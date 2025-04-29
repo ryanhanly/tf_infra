@@ -75,19 +75,41 @@ resource "aws_security_group" "linux_sg" {
   tags = { Name = "${var.name_prefix}-sg" }
 }
 
+# Generate a unique key pair for each server
 resource "tls_private_key" "ssh_key" {
-  algorith = "RSA"
-  rsa_bits = 4096
+  for_each  = var.server_instances
+  algorithm = "RSA"
+  rsa_bits  = 4096
 }
 
-resource "aws_key_pair" "generated_key" {
-  key_name   = var.key_name
-  public_key = tls_private_key.ssh_key.public_key_openssh
+
+locals {
+  server_os_types = {
+    for k, ami in data.aws_ami.server_ami : k => (
+      can(regex("windows", lower(ami.description))) ? "win" : "lnx"
+    )
+  }
 }
 
+# Get the OS type and create the server name using the same pattern
+locals {
+  server_names = {
+    for k, v in var.server_instances : k => "aws-srv-${local.server_os_types[k]}-${format("%02d", v.index)}"
+  }
+}
+
+# Create a key pair in AWS for each server using the server name
+resource "aws_key_pair" "server_key" {
+  for_each   = var.server_instances
+  key_name   = "${local.server_names[each.key]}-key"
+  public_key = tls_private_key.ssh_key[each.key].public_key_openssh
+}
+
+# Save the private key locally for each server using the server name
 resource "local_file" "private_key" {
-  content         = tls_private_key.ssh_key.private_key_pem
-  filename        = "${path.module}/ssh_keys/${var.key_name}.pem"
+  for_each        = var.server_instances
+  content         = tls_private_key.ssh_key[each.key].private_key_pem
+  filename        = "${path.module}/ssh_keys/${local.server_names[each.key]}.pem"
   file_permission = "0600"
 
   provisioner "local-exec" {
@@ -109,13 +131,6 @@ data "aws_ami" "server_ami" {
   }
 }
 
-locals {
-  server_os_types = {
-    for k, ami in data.aws_ami.server_ami : k => (
-      can(regex("windows", lower(ami.description))) ? "win" : "lnx"
-    )
-  }
-}
 
 resource "aws_instance" "linux_servers" {
   for_each = var.server_instances
@@ -124,12 +139,11 @@ resource "aws_instance" "linux_servers" {
   instance_type          = each.value.instance_type
   subnet_id              = aws_subnet.linux_subnet.id
   vpc_security_group_ids = [aws_security_group.linux_sg.id]
-  key_name               = aws_key_pair.generated_key.key_name
+  key_name               = aws_key_pair.server_key[each.key].key_name
 
   tags = merge(
     {
-      # Implement naming standard directly in the resource
-      Name = "aws-srv-${local.server_os_types[each.key]}-${format("%02d", each.value.index)}"
+      Name = local.server_names[each.key]
     },
     each.value.additional_tags
   )
