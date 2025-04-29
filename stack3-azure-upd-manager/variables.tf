@@ -65,13 +65,13 @@ variable "maintenance_config_name" {
 
 variable "maintenance_start_time" {
   type        = string
-  default     = "2025-05-01T22:00:00Z"
+  default     = "2025-05-01 22:00:00"
   description = "Start time for maintenance window (RFC3339 format)"
 }
 
 variable "maintenance_expiration_time" {
   type        = string
-  default     = "2026-05-01T22:00:00Z"
+  default     = "2026-05-01 22:00:00"
   description = "Expiration time for maintenance window (RFC3339 format)"
 }
 
@@ -132,7 +132,7 @@ variable "windows_kb_to_exclude" {
 variable "reboot_setting" {
   type        = string
   default     = "IfRequired"
-  description = "Reboot setting (Never, Always, IfRequired)"
+  description = "Reboot setting (Never, Always, RebbotIfRequired)"
 }
 
 variable "tags" {

@@ -1,13 +1,13 @@
-# azure-update-manager/main.tf
+# stack3-azure-upd-manager/main.tf
 
 provider "azurerm" {
   features {}
 
   # Uncomment and use these if needed for authentication
-  # subscription_id = var.subscription_id
-  # client_id       = var.client_id
-  # client_secret   = var.client_secret
-  # tenant_id       = var.tenant_id
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
 }
 
 # Resource Group for Update Management
@@ -61,10 +61,11 @@ resource "azurerm_log_analytics_solution" "update_mgmt_solution" {
 
 # Create maintenance configuration (schedule)
 resource "azurerm_maintenance_configuration" "update_schedule" {
-  name                = var.maintenance_config_name
-  resource_group_name = azurerm_resource_group.update_mgmt_rg.name
-  location            = azurerm_resource_group.update_mgmt_rg.location
-  maintenance_scope   = "InGuestPatch"
+  name                     = var.maintenance_config_name
+  resource_group_name      = azurerm_resource_group.update_mgmt_rg.name
+  location                 = azurerm_resource_group.update_mgmt_rg.location
+  scope                    = "InGuestPatch"
+  in_guest_user_patch_mode = "User"
 
   window {
     start_date_time      = var.maintenance_start_time
@@ -75,19 +76,19 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
   }
 
   install_patches {
-    linux_parameters {
-      classifications_to_include    = var.linux_classifications_to_include
-      package_name_masks_to_include = var.linux_packages_to_include
-      package_name_masks_to_exclude = var.linux_packages_to_exclude
+    linux {
+      classifications_to_include = var.linux_classifications_to_include
+      package_names_mask_to_include = var.linux_packages_to_include
+      package_names_mask_to_exclude = var.linux_packages_to_exclude
     }
 
-    windows_parameters {
+    windows {
       classifications_to_include = var.windows_classifications_to_include
       kb_numbers_to_include      = var.windows_kb_to_include
       kb_numbers_to_exclude      = var.windows_kb_to_exclude
     }
 
-    reboot_setting = var.reboot_setting
+    reboot = var.reboot_setting
   }
 
   tags = var.tags
