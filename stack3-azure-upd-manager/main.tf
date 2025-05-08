@@ -1,4 +1,5 @@
 # stack3-azure-upd-manager/main.tf
+# Updated version for Azure Update Manager without OMS dependencies
 
 provider "azurerm" {
   features {}
@@ -27,7 +28,9 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
   visibility               = "Custom"
 
   window {
+    # Format: "YYYY-MM-DD HH:MM"
     start_date_time      = "${var.maintenance_start_date} ${var.maintenance_start_time}"
+    # Handle empty expiration date
     expiration_date_time = var.maintenance_expiration_date != "" ? "${var.maintenance_expiration_date} ${var.maintenance_start_time}" : null
     duration             = var.maintenance_duration
     time_zone            = var.maintenance_timezone
@@ -36,9 +39,9 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
 
   install_patches {
     linux {
-      classifications_to_include = var.linux_classifications_to_include
-      package_names_mask_to_include = var.linux_packages_to_include
-      package_names_mask_to_exclude = var.linux_packages_to_exclude
+      classifications_to_include     = var.linux_classifications_to_include
+      package_names_mask_to_include  = var.linux_packages_to_include
+      package_names_mask_to_exclude  = var.linux_packages_to_exclude
     }
 
     windows {
