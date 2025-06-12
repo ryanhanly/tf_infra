@@ -65,16 +65,17 @@ resource "azurerm_storage_account" "repo_storage" {
 }
 
 # Apply network restrictions after container creation
-resource "azurerm_storage_account_network_rules" "repo_storage_rules" {
-  storage_account_id = azurerm_storage_account.repo_storage.id
+# this messes about with TF, maybe leave them out
+# resource "azurerm_storage_account_network_rules" "repo_storage_rules" {
+#   storage_account_id = azurerm_storage_account.repo_storage.id
 
-  default_action = "Deny"
-  bypass         = ["AzureServices"]
+#   default_action = "Deny"
+#   bypass         = ["AzureServices"]
 
-  virtual_network_subnet_ids = [azurerm_subnet.mirror_subnet.id]
+#   virtual_network_subnet_ids = [azurerm_subnet.mirror_subnet.id]
 
-  depends_on = [azurerm_storage_container.repo_container]
-}
+#   depends_on = [azurerm_storage_container.repo_container]
+# }
 
 resource "azurerm_storage_management_policy" "repo_lifecycle" {
   storage_account_id = azurerm_storage_account.repo_storage.id
