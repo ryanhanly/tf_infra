@@ -1,12 +1,38 @@
 # stack4-central-mirror/main.tf
 # Central Linux Repository Mirror Server
 
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+    random = {
+      source  = "hashicorp/random"
+      version = "~> 3.0"
+    }
+    tls = {
+      source  = "hashicorp/tls"
+      version = "~> 4.0"
+    }
+    local = {
+      source  = "hashicorp/local"
+      version = "~> 2.4"
+    }
+  }
+}
+
 provider "azurerm" {
   features {}
   subscription_id = var.subscription_id
   client_id       = var.client_id
   client_secret   = var.client_secret
   tenant_id       = var.tenant_id
+}
+
+# Generate random suffix for storage account
+resource "random_id" "storage_suffix" {
+  byte_length = 4
 }
 
 # Resource Group
@@ -19,13 +45,13 @@ resource "azurerm_resource_group" "mirror_rg" {
 # Storage Account for Repository Storage
 resource "azurerm_storage_account" "repo_storage" {
   name                     = "repostore${random_id.storage_suffix.hex}"
-  resource_group_name      = azurerm_resource_group.main.name
-  location                 = azurerm_resource_group.main.location
+  resource_group_name      = azurerm_resource_group.mirror_rg.name
+  location                 = azurerm_resource_group.mirror_rg.location
   account_tier             = "Standard"
   account_replication_type = "GRS"
 
-  # Disable public access for security
-  public_network_access_enabled = false
+  # Allow public access for now - can restrict manually later
+  public_network_access_enabled = true
 
   blob_properties {
     delete_retention_policy {
@@ -35,15 +61,19 @@ resource "azurerm_storage_account" "repo_storage" {
     versioning_enabled = true
   }
 
-  network_rules {
-    default_action = "Deny"
-    bypass         = ["AzureServices"]
-
-    # Allow access from mirror subnet
-    virtual_network_subnet_ids = [azurerm_subnet.mirror_subnet.id]
-  }
-
   tags = var.tags
+}
+
+# Apply network restrictions after container creation
+resource "azurerm_storage_account_network_rules" "repo_storage_rules" {
+  storage_account_id = azurerm_storage_account.repo_storage.id
+
+  default_action = "Deny"
+  bypass         = ["AzureServices"]
+
+  virtual_network_subnet_ids = [azurerm_subnet.mirror_subnet.id]
+
+  depends_on = [azurerm_storage_container.repo_container]
 }
 
 resource "azurerm_storage_management_policy" "repo_lifecycle" {
@@ -71,7 +101,7 @@ resource "azurerm_storage_management_policy" "repo_lifecycle" {
 # Blob Container for repositories
 resource "azurerm_storage_container" "repo_container" {
   name                  = "linux-repos"
-  storage_account_name  = azurerm_storage_account.repo_storage.name
+  storage_account_id    = azurerm_storage_account.repo_storage.id
   container_access_type = "blob"
 }
 
@@ -90,8 +120,6 @@ resource "azurerm_subnet" "private_endpoint_subnet" {
   resource_group_name  = azurerm_resource_group.mirror_rg.name
   virtual_network_name = azurerm_virtual_network.mirror_vnet.name
   address_prefixes     = ["172.16.2.0/24"]
-
-  private_endpoint_network_policies_enabled = false
 }
 
 # Subnet
@@ -100,6 +128,8 @@ resource "azurerm_subnet" "mirror_subnet" {
   resource_group_name  = azurerm_resource_group.mirror_rg.name
   virtual_network_name = azurerm_virtual_network.mirror_vnet.name
   address_prefixes     = ["172.16.1.0/24"]
+
+  service_endpoints    = ["Microsoft.Storage"]
 }
 
 # Public IP (conditionally created)
@@ -178,7 +208,7 @@ resource "azurerm_network_security_group" "mirror_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_ranges    = ["80", "443"]
-    source_address_prefixes    = var.allowed_aws_ips
+    source_address_prefixes    = length(var.allowed_aws_ips) > 0 ? var.allowed_aws_ips : ["10.255.255.255/32"]
     destination_address_prefix = "*"
   }
 
@@ -190,7 +220,7 @@ resource "azurerm_network_security_group" "mirror_nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_ranges    = ["80", "443"]
-    source_address_prefixes    = var.allowed_azure_vnets
+    source_address_prefixes    = length(var.allowed_azure_vnets) > 0 ? var.allowed_azure_vnets : ["10.255.255.255/32"]
     destination_address_prefix = "*"
   }
 
@@ -335,12 +365,12 @@ resource "azurerm_virtual_machine_data_disk_attachment" "mirror_disk_attach" {
   caching            = "ReadWrite"
 }
 
-# Grant VM access to storage account
-resource "azurerm_role_assignment" "mirror_storage_access" {
-  scope                = azurerm_storage_account.repo_storage.id
-  role_definition_name = "Storage Blob Data Contributor"
-  principal_id         = azurerm_linux_virtual_machine.mirror_vm.identity[0].principal_id
-}
+# Grant VM access to storage account (commented out due to permissions)
+# resource "azurerm_role_assignment" "mirror_storage_access" {
+#   scope                = azurerm_storage_account.repo_storage.id
+#   role_definition_name = "Storage Blob Data Contributor"
+#   principal_id         = azurerm_linux_virtual_machine.mirror_vm.identity[0].principal_id
+# }
 
 # Azure Automation Account for scheduled sync
 resource "azurerm_automation_account" "repo_automation" {
@@ -378,7 +408,7 @@ resource "azurerm_automation_schedule" "daily_sync" {
   automation_account_name = azurerm_automation_account.repo_automation.name
   frequency               = "Day"
   interval                = 1
-  start_time             = "2025-01-01T02:00:00Z"
+  start_time             = timeadd(timestamp(), "10m")
   description            = "Daily repository synchronization"
 }
 
