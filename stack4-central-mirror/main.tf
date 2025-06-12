@@ -18,11 +18,11 @@ resource "azurerm_resource_group" "mirror_rg" {
 
 # Storage Account for Repository Storage
 resource "azurerm_storage_account" "repo_storage" {
-  name                     = var.storage_account_name
-  resource_group_name      = azurerm_resource_group.mirror_rg.name
-  location                 = azurerm_resource_group.mirror_rg.location
+  name                     = "repostore${random_id.storage_suffix.hex}"
+  resource_group_name      = azurerm_resource_group.main.name
+  location                 = azurerm_resource_group.main.location
   account_tier             = "Standard"
-  account_replication_type = "LRS"
+  account_replication_type = "GRS"
 
   # Disable public access for security
   public_network_access_enabled = false
@@ -33,34 +33,6 @@ resource "azurerm_storage_account" "repo_storage" {
     }
 
     versioning_enabled = true
-
-    # Lifecycle management for cost optimization
-    lifecycle_policy {
-      rule {
-        name    = "repository_lifecycle"
-        enabled = true
-
-        filters {
-          prefix_match = ["linux-repos/"]
-          blob_types   = ["blockBlob"]
-        }
-
-        actions {
-          base_blob {
-            # Move to cool storage after 30 days
-            tier_to_cool_after_days_since_modification_greater_than = 30
-            # Move to archive after 6 months
-            tier_to_archive_after_days_since_modification_greater_than = 180
-            # Delete after 2 years
-            delete_after_days_since_modification_greater_than = 730
-          }
-
-          snapshot {
-            delete_after_days_since_creation_greater_than = 90
-          }
-        }
-      }
-    }
   }
 
   network_rules {
@@ -72,6 +44,28 @@ resource "azurerm_storage_account" "repo_storage" {
   }
 
   tags = var.tags
+}
+
+resource "azurerm_storage_management_policy" "repo_lifecycle" {
+  storage_account_id = azurerm_storage_account.repo_storage.id
+
+  rule {
+    name    = "deleteOldPackages"
+    enabled = true
+
+    filters {
+      prefix_match = ["rhel-updates/"]
+      blob_types   = ["blockBlob"]
+    }
+
+    actions {
+      base_blob {
+        tier_to_cool_after_days_since_modification_greater_than    = 30
+        tier_to_archive_after_days_since_modification_greater_than = 90
+        delete_after_days_since_modification_greater_than          = 365
+      }
+    }
+  }
 }
 
 # Blob Container for repositories
