@@ -74,6 +74,19 @@ resource "aws_security_group" "linux_sg" {
   }
   tags = { Name = "${var.name_prefix}-sg" }
 }
+# Create Elastic IPs for each server
+resource "aws_eip" "server_eips" {
+  for_each = var.server_instances
+  domain   = "vpc"
+
+  tags     = merge(
+    {
+      Name = "${local.server_names[each.key]}-eip"
+    },
+    each.value.additional_tags
+  )
+}
+
 
 # Generate a unique key pair for each server
 resource "tls_private_key" "ssh_key" {
@@ -132,6 +145,8 @@ data "aws_ami" "server_ami" {
 }
 
 
+# Update the EC2 instances section - modify the existing aws_instance resource:
+
 resource "aws_instance" "linux_servers" {
   for_each = var.server_instances
 
@@ -147,4 +162,11 @@ resource "aws_instance" "linux_servers" {
     },
     each.value.additional_tags
   )
+}
+
+# Associate Elastic IPs with instances
+resource "aws_eip_association" "server_eip_assoc" {
+  for_each    = var.server_instances
+  instance_id = aws_instance.linux_servers[each.key].id
+  allocation_id = aws_eip.server_eips[each.key].id
 }
