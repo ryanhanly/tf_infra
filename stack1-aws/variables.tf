@@ -1,5 +1,5 @@
 # Add these variables to stack1-aws/variables.tf
-variable aws_region {Add commentMore actions
+variable aws_region {
   type        = string
   default     = "eu-west-2"
   description = "AWS Region for deploying resources"
