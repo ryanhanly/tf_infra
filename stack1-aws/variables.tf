@@ -1,15 +1,4 @@
 # Add these variables to stack1-aws/variables.tf
-variable "aws_region"{
-  type =    string
-  default = "eu-west-2"
-  description = "AWS Region for deploying resources"
-}
-
-variable "name_prefix" {
-  type  = string
-  default = "lab"
-  description = "Default naming"
-}
 
 variable "enable_auto_shutdown" {
   type        = bool
@@ -17,165 +6,66 @@ variable "enable_auto_shutdown" {
   description = "Enable auto-shutdown for cost savings (lab environments only)"
 }
 
-variable "auto_shutdown_time" {
+variable "name_prefix" {
   type        = string
-  default     = "18:00"
-  description = "Auto-shutdown time in HH:MM format (24-hour)"
+  default     = "linux"
+  description = "Prefix for naming resources"
 }
 
-variable "auto_shutdown_timezone" {
+variable "vpc_cidr" {
   type        = string
-  default     = "Europe/London"
-  description = "Timezone for auto-shutdown"
+  default     = "10.0.0.0/16"
+  description = "CIDR block for the VPC"
 }
 
-variable "auto_shutdown_notification_email" {
+variable "subnet_cidr" {
   type        = string
-  default     = ""
-  description = "Email for shutdown notifications (optional)"
+  default     = "10.0.1.0/24"
+  description = "CIDR block for the subnet"
 }
 
-# Add to the end of stack1-aws/main.tf
-
-# Lambda function for auto-shutdown
-resource "aws_iam_role" "shutdown_lambda_role" {
-  count = var.enable_auto_shutdown ? 1 : 0
-  name  = "${var.name_prefix}-shutdown-lambda-role"
-
-  assume_role_policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Action = "sts:AssumeRole"
-        Effect = "Allow"
-        Principal = {
-          Service = "lambda.amazonaws.com"
-        }
-      }
-    ]
-  })
+variable "ssh_allowed_cidr" {
+  type        = list(string)
+  default     = ["0.0.0.0/0"]
+  description = "CIDR blocks allowed for SSH access (restrict in production)"
 }
 
-resource "aws_iam_policy" "shutdown_lambda_policy" {
-  count = var.enable_auto_shutdown ? 1 : 0
-  name  = "${var.name_prefix}-shutdown-lambda-policy"
-
-  policy = jsonencode({
-    Version = "2012-10-17"
-    Statement = [
-      {
-        Effect = "Allow"
-        Action = [
-          "logs:CreateLogGroup",
-          "logs:CreateLogStream",
-          "logs:PutLogEvents"
-        ]
-        Resource = "arn:aws:logs:*:*:*"
-      },
-      {
-        Effect = "Allow"
-        Action = [
-          "ec2:DescribeInstances",
-          "ec2:StopInstances"
-        ]
-        Resource = "*"
-      }
-    ]
-  })
+variable "key_name" {
+  type        = string
+  default     = "srv-ub-key"
+  description = "Name of the key pair to use for SSH access"
 }
 
-resource "aws_iam_role_policy_attachment" "shutdown_lambda_policy_attach" {
-  count      = var.enable_auto_shutdown ? 1 : 0
-  role       = aws_iam_role.shutdown_lambda_role[0].name
-  policy_arn = aws_iam_policy.shutdown_lambda_policy[0].arn
-}
+variable "server_instances" {
+  type = map(object({
+    ami_id          = string
+    instance_type   = string
+    index           = number
+    additional_tags = map(string)
+  }))
+  description = "Map of servers to create with their configurations"
 
-# Lambda function for shutdown
-resource "aws_lambda_function" "auto_shutdown" {
-  count         = var.enable_auto_shutdown ? 1 : 0
-  filename      = "shutdown_lambda.zip"
-  function_name = "${var.name_prefix}-auto-shutdown"
-  role          = aws_iam_role.shutdown_lambda_role[0].arn
-  handler       = "lambda_function.lambda_handler"
-  runtime       = "python3.9"
-
-  source_code_hash = data.archive_file.shutdown_lambda_zip[0].output_base64sha256
-
-  environment {
-    variables = {
-      TAG_KEY   = "AutoShutdown"
-      TAG_VALUE = "Enabled"
+  default = {
+    # This maintains your original server
+    "server1" = {
+      ami_id          = "ami-0a94c8e4ca2674d5a"
+      instance_type   = "t2.micro"
+      index           = 1
+      additional_tags = {}
+    }
+    # Example of adding another server
+    "server2" = {
+      ami_id          = "ami-0a94c8e4ca2674d5a"
+      instance_type   = "t2.micro"
+      index           = 2
+      additional_tags = { "Purpose" = "Testing" }
+    }
+    # Example of adding another server
+    "server3" = {
+      ami_id          = "ami-0a94c8e4ca2674d5a"
+      instance_type   = "t2.micro"
+      index           = 3
+      additional_tags = { "Purpose" = "Testing" }
     }
   }
-}
-
-# Create Lambda deployment package
-data "archive_file" "shutdown_lambda_zip" {
-  count       = var.enable_auto_shutdown ? 1 : 0
-  type        = "zip"
-  output_path = "shutdown_lambda.zip"
-
-  source {
-    content = <<EOF
-import boto3
-import os
-
-def lambda_handler(event, context):
-    ec2 = boto3.client('ec2')
-
-    # Get instances with AutoShutdown tag
-    response = ec2.describe_instances(
-        Filters=[
-            {
-                'Name': 'tag:${var.name_prefix}',
-                'Values': ['*']
-            },
-            {
-                'Name': 'instance-state-name',
-                'Values': ['running']
-            }
-        ]
-    )
-
-    instance_ids = []
-    for reservation in response['Reservations']:
-        for instance in reservation['Instances']:
-            instance_ids.append(instance['InstanceId'])
-
-    if instance_ids:
-        ec2.stop_instances(InstanceIds=instance_ids)
-        print(f"Stopped instances: {instance_ids}")
-    else:
-        print("No running instances found to stop")
-
-    return {
-        'statusCode': 200,
-        'body': f'Processed {len(instance_ids)} instances'
-    }
-EOF
-    filename = "lambda_function.py"
-  }
-}
-
-# EventBridge rule for daily shutdown
-resource "aws_cloudwatch_event_rule" "daily_shutdown" {
-  count               = var.enable_auto_shutdown ? 1 : 0
-  name                = "${var.name_prefix}-daily-shutdown"
-  description         = "Trigger auto-shutdown daily"
-  schedule_expression = "cron(${split(":", var.auto_shutdown_time)[1]} ${split(":", var.auto_shutdown_time)[0]} * * ? *)"
-}
-
-resource "aws_cloudwatch_event_target" "lambda_target" {
-  count = var.enable_auto_shutdown ? 1 : 0
-  rule  = aws_cloudwatch_event_rule.daily_shutdown[0].name
-  arn   = aws_lambda_function.auto_shutdown[0].arn
-}
-
-resource "aws_lambda_permission" "allow_eventbridge" {
-  count         = var.enable_auto_shutdown ? 1 : 0
-  statement_id  = "AllowExecutionFromEventBridge"
-  action        = "lambda:InvokeFunction"
-  function_name = aws_lambda_function.auto_shutdown[0].function_name
-  principal     = "events.amazonaws.com"
-  source_arn    = aws_cloudwatch_event_rule.daily_shutdown[0].arn
 }
