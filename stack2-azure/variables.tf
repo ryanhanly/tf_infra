@@ -80,3 +80,27 @@ variable "virtual_machines" {
     }
   }
 }
+
+variable "enable_auto_shutdown" {
+  type        = bool
+  default     = true
+  description = "Enable auto-shutdown for cost savings (lab environments only)"
+}
+
+variable "auto_shutdown_time" {
+  type        = string
+  default     = "1800"  # 18:00 (6 PM)
+  description = "Auto-shutdown time in HHMM format (24-hour)"
+}
+
+variable "auto_shutdown_timezone" {
+  type        = string
+  default     = "GMT Standard Time"
+  description = "Timezone for auto-shutdown"
+}
+
+variable "auto_shutdown_notification_email" {
+  type        = string
+  default     = ""
+  description = "Email for shutdown notifications (optional)"
+}

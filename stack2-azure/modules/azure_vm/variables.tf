@@ -61,3 +61,27 @@ variable "tags" {
   type        = map(string)
   default     = {}
 }
+
+variable "enable_auto_shutdown" {
+  type        = bool
+  default     = true
+  description = "Enable auto-shutdown for cost savings"
+}
+
+variable "auto_shutdown_time" {
+  type        = string
+  default     = "1800"
+  description = "Auto-shutdown time in HHMM format"
+}
+
+variable "auto_shutdown_timezone" {
+  type        = string
+  default     = "GMT Standard Time"
+  description = "Timezone for auto-shutdown"
+}
+
+variable "auto_shutdown_notification_email" {
+  type        = string
+  default     = ""
+  description = "Email for shutdown notifications"
+}

@@ -88,13 +88,16 @@ module "linux_vm" {
 
   resource_group_name  = azurerm_resource_group.rg.name
   location             = azurerm_resource_group.rg.location
-
-  # Implement naming standard directly
   vm_name              = "azr-srv-lnx-${format("%02d", each.value.index)}"
-
   vm_size              = each.value.vm_size
   network_interface_id = azurerm_network_interface.nic[each.key].id
   admin_username       = each.value.admin_username
+
+  # Pass auto-shutdown variables to module
+  enable_auto_shutdown                = var.enable_auto_shutdown
+  auto_shutdown_time                  = var.auto_shutdown_time
+  auto_shutdown_timezone              = var.auto_shutdown_timezone
+  auto_shutdown_notification_email    = var.auto_shutdown_notification_email
 
   tags = merge(
     {

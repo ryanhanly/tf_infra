@@ -37,6 +37,25 @@ resource "azurerm_linux_virtual_machine" "vm" {
   tags = var.tags
 }
 
+# Auto-shutdown schedule (for cost optimization in lab environments)
+resource "azurerm_dev_test_global_vm_shutdown_schedule" "vm_shutdown" {
+  count              = var.enable_auto_shutdown ? 1 : 0
+  virtual_machine_id = azurerm_linux_virtual_machine.vm.id
+  location           = var.location
+  enabled            = true
+
+  daily_recurrence_time = var.auto_shutdown_time
+  timezone              = var.auto_shutdown_timezone
+
+  notification_settings {
+    enabled         = var.auto_shutdown_notification_email != ""
+    time_in_minutes = 30
+    email           = var.auto_shutdown_notification_email
+  }
+
+  tags = var.tags
+}
+
 # Optional: Save the SSH private key to a local file for easy access
 resource "local_file" "private_key" {
   content  = tls_private_key.ssh_key.private_key_pem
