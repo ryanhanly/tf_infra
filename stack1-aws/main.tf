@@ -27,39 +27,39 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "aws_vpc" "vpc" {
+resource "aws_vpc" "linux_vpc" {
   cidr_block = var.vpc_cidr
   tags       = { Name = "${var.name_prefix}-vpc" }
 }
 
-resource "aws_subnet" "subnet" {
-  vpc_id                  = aws_vpc.vpc.id
+resource "aws_subnet" "linux_subnet" {
+  vpc_id                  = aws_vpc.linux_vpc.id
   cidr_block              = var.subnet_cidr
   map_public_ip_on_launch = true
   tags                    = { Name = "${var.name_prefix}-subnet" }
 }
 
-resource "aws_internet_gateway" "igw" {
-  vpc_id = aws_vpc.vpc.id
+resource "aws_internet_gateway" "linux_igw" {
+  vpc_id = aws_vpc.linux_vpc.id
   tags   = { Name = "${var.name_prefix}-igw" }
 }
 
-resource "aws_route_table" "rt" {
-  vpc_id = aws_vpc.vpc.id
+resource "aws_route_table" "linux_rt" {
+  vpc_id = aws_vpc.linux_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.igw.id
+    gateway_id = aws_internet_gateway.linux_igw.id
   }
   tags = { Name = "${var.name_prefix}-rt" }
 }
 
-resource "aws_route_table_association" "rta" {
-  subnet_id      = aws_subnet.subnet.id
-  route_table_id = aws_route_table.rt.id
+resource "aws_route_table_association" "linux_rta" {
+  subnet_id      = aws_subnet.linux_subnet.id
+  route_table_id = aws_route_table.linux_rt.id
 }
 
-resource "aws_security_group" "sg" {
-  vpc_id = aws_vpc.vpc.id
+resource "aws_security_group" "linux_sg" {
+  vpc_id = aws_vpc.linux_vpc.id
   ingress {
     from_port   = 22
     to_port     = 22
@@ -82,10 +82,20 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits  = 4096
 }
 
-# Create the server name based on OS type
+locals {
+  server_os_types = {
+    for k, v in var.server_instances : k => (
+      contains(["ubuntu", "linux"], lower(v.os_type)) ? "lnx" :
+      v.os_type == "windows" ? "win" :
+      "lnx"
+    )
+  }
+}
+
+# Get the OS type and create the server name using the same pattern
 locals {
   server_names = {
-    for k, v in var.server_instances : k => "aws-srv-${v.os_type == "ubuntu" || v.os_type == "linux" ? "lnx" : v.os_type == "windows" ? "win" : "lnx"}-${format("%02d", v.index)}"
+    for k, v in var.server_instances : k => "aws-srv-${local.server_os_types[k]}-${format("%02d", v.index)}"
   }
 }
 
@@ -108,13 +118,13 @@ resource "local_file" "private_key" {
   }
 }
 
-resource "aws_instance" "servers" {
+resource "aws_instance" "linux_servers" {
   for_each = var.server_instances
 
   ami                    = each.value.ami_id
   instance_type          = each.value.instance_type
-  subnet_id              = aws_subnet.subnet.id
-  vpc_security_group_ids = [aws_security_group.sg.id]
+  subnet_id              = aws_subnet.linux_subnet.id
+  vpc_security_group_ids = [aws_security_group.linux_sg.id]
   key_name               = aws_key_pair.server_key[each.key].key_name
 
   tags = merge(
