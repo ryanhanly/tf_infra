@@ -6,14 +6,14 @@ package_upgrade: true
 
 packages:
   - nginx
-  - apache2-utils
   - rsync
   - wget
   - curl
-  - apt-mirror
-  - createrepo-c
+  - createrepo_c
   - yum-utils
   - subscription-manager
+  - dnf-utils
+  - httpd-tools
 
 write_files:
   - path: /etc/nginx/sites-available/repo-mirror
@@ -31,30 +31,23 @@ write_files:
               add_header Content-Type text/html;
           }
 
-          # Ubuntu repositories
-          location ~ ^/ubuntu/(focal|jammy|noble)/ {
-              alias /var/www/repos/ubuntu/;
+          # RHEL repositories - major versions
+          location ~ ^/rhel/([89])/ {
+              alias /var/www/repos/rhel/;
+              autoindex on;
+              try_files $uri $uri/ =404;
+          }
+
+          # RHEL repositories - minor versions (8.8, 9.3, etc.)
+          location ~ ^/rhel/([89]\.[0-9]+)/ {
+              alias /var/www/repos/rhel/;
               autoindex on;
               try_files $uri $uri/ =404;
           }
 
           # CentOS Stream repositories
-          location ~ ^/centos/(8-stream|9-stream)/ {
+          location ~ ^/centos/(8|9)-stream/ {
               alias /var/www/repos/centos/;
-              autoindex on;
-              try_files $uri $uri/ =404;
-          }
-
-          # RHEL repositories - major versions
-          location ~ ^/rhel/([789])/ {
-              alias /var/www/repos/rhel/;
-              autoindex on;
-              try_files $uri $uri/ =404;
-          }
-
-          # RHEL repositories - minor versions (7.9, 8.8, 9.3, etc.)
-          location ~ ^/rhel/([789]\.[0-9]+)/ {
-              alias /var/www/repos/rhel/;
               autoindex on;
               try_files $uri $uri/ =404;
           }
@@ -65,30 +58,6 @@ write_files:
           add_header X-XSS-Protection "1; mode=block";
       }
 
-  - path: /etc/apt/mirror.list
-    content: |
-      ############# config ##################
-      set base_path    /var/www/repos
-      set mirror_path  $base_path/mirror
-      set skel_path    $base_path/skel
-      set var_path     $base_path/var
-      set cleanscript $var_path/clean.sh
-      set defaultarch  amd64
-      set postmirror_script $var_path/postmirror.sh
-      set run_postmirror 0
-      set nthreads     20
-      set _tilde 0
-
-      ############# Ubuntu repos ############
-      deb-amd64 http://archive.ubuntu.com/ubuntu jammy main restricted universe multiverse
-      deb-amd64 http://archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse
-      deb-amd64 http://archive.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
-      deb-amd64 http://archive.ubuntu.com/ubuntu focal main restricted universe multiverse
-      deb-amd64 http://archive.ubuntu.com/ubuntu focal-updates main restricted universe multiverse
-      deb-amd64 http://archive.ubuntu.com/ubuntu focal-security main restricted universe multiverse
-
-      clean http://archive.ubuntu.com/ubuntu
-
   - path: /usr/local/bin/setup-mirror.sh
     permissions: '0755'
     content: |
@@ -97,52 +66,42 @@ write_files:
 
       # Mount and format data disk
       if ! mountpoint -q /var/www/repos; then
-          mkfs.ext4 /dev/sdc
+          mkfs.xfs /dev/sdc
           mkdir -p /var/www/repos
           mount /dev/sdc /var/www/repos
-          echo "/dev/sdc /var/www/repos ext4 defaults 0 2" >> /etc/fstab
+          echo "/dev/sdc /var/www/repos xfs defaults 0 2" >> /etc/fstab
       fi
 
       # Set permissions
-      chown -R www-data:www-data /var/www/repos
+      chown -R nginx:nginx /var/www/repos
       chmod -R 755 /var/www/repos
 
-      # Create comprehensive directory structure for all distros and versions
-      mkdir -p /var/www/repos/{ubuntu,centos,rhel,mirror,skel,var}
+      # Create RHEL repository structure
+      mkdir -p /var/www/repos/{rhel,centos}
 
-      # Ubuntu structure
-      mkdir -p /var/www/repos/ubuntu/{focal,jammy,noble}/{main,restricted,universe,multiverse}
-      mkdir -p /var/www/repos/ubuntu/{focal,jammy,noble}-{updates,security}/{main,restricted,universe,multiverse}
+      # RHEL 8 structure
+      mkdir -p /var/www/repos/rhel/8/{BaseOS,AppStream,CodeReady}
+      mkdir -p /var/www/repos/rhel/8.{8,9,10}/{BaseOS,AppStream,CodeReady}
+
+      # RHEL 9 structure
+      mkdir -p /var/www/repos/rhel/9/{BaseOS,AppStream,CodeReady}
+      mkdir -p /var/www/repos/rhel/9.{0,1,2,3,4}/{BaseOS,AppStream,CodeReady}
 
       # CentOS Stream structure
-      mkdir -p /var/www/repos/centos/{8-stream,9-stream}/{BaseOS,AppStream,extras,PowerTools}
+      mkdir -p /var/www/repos/centos/{8,9}-stream/{BaseOS,AppStream,extras,PowerTools}
 
-      # RHEL structure (major versions)
-      mkdir -p /var/www/repos/rhel/{7,8,9}/{Server,Workstation}
-      mkdir -p /var/www/repos/rhel/7/Server/{os,updates,extras,optional}
-      mkdir -p /var/www/repos/rhel/8/{BaseOS,AppStream,CodeReady}
-      mkdir -p /var/www/repos/rhel/9/{BaseOS,AppStream,CodeReady}
-
-      # RHEL minor version structure
-      for major in 7 8 9; do
-          case $major in
-              7) minors="0 1 2 3 4 5 6 7 8 9" ;;
-              8) minors="0 1 2 3 4 5 6 7 8 9" ;;
-              9) minors="0 1 2 3 4" ;;
-          esac
-          for minor in $minors; do
-              mkdir -p /var/www/repos/rhel/$major.$minor/{BaseOS,AppStream,CodeReady}
-          done
-      done
-
-      # Enable nginx site
-      ln -sf /etc/nginx/sites-available/repo-mirror /etc/nginx/sites-enabled/
-      rm -f /etc/nginx/sites-enabled/default
-      systemctl restart nginx
+      # Configure nginx (RHEL uses nginx package)
       systemctl enable nginx
+      ln -sf /etc/nginx/sites-available/repo-mirror /etc/nginx/conf.d/repo-mirror.conf 2>/dev/null || {
+          # For RHEL, create the config directly
+          cp /etc/nginx/sites-available/repo-mirror /etc/nginx/conf.d/repo-mirror.conf
+      }
+      systemctl restart nginx
 
       # Install Azure CLI
-      curl -sL https://aka.ms/InstallAzureCLIDeb | bash
+      rpm --import https://packages.microsoft.com/keys/microsoft.asc
+      dnf install -y https://packages.microsoft.com/config/rhel/8/packages-microsoft-prod.rpm
+      dnf install -y azure-cli
 
       # Install azcopy
       cd /tmp
@@ -154,6 +113,7 @@ write_files:
       # Create sync script
       cat > /usr/local/bin/sync-to-blob.sh << 'EOF'
       #!/bin/bash
+      echo "Starting blob sync at $(date)"
 
       # Authenticate using managed identity
       az login --identity
@@ -161,127 +121,158 @@ write_files:
       # Sync repositories to blob storage
       azcopy sync /var/www/repos/ "https://${storage_account_name}.blob.core.windows.net/${container_name}/" \
         --recursive=true \
-        --delete-destination=true
+        --delete-destination=false \
+        --exclude-pattern="*.tmp;*.lock;repodata/TRANS.TBL"
 
       echo "Repository sync completed at $(date)"
       EOF
 
       chmod +x /usr/local/bin/sync-to-blob.sh
 
-      # Create initial Ubuntu mirror sync script
-      cat > /usr/local/bin/mirror-ubuntu.sh << 'EOF'
-      #!/bin/bash
-
-      echo "Starting Ubuntu repository mirror sync..."
-      cd /var/www/repos
-      apt-mirror /etc/apt/mirror.list
-
-      # Create repository metadata
-      cd /var/www/repos/mirror
-      for dist in jammy focal; do
-          for component in main restricted universe multiverse; do
-              if [ -d "archive.ubuntu.com/ubuntu/dists/$dist/$component" ]; then
-                  echo "Processing $dist/$component"
-              fi
-          done
-      done
-
-      echo "Ubuntu mirror sync completed"
-      EOF
-
-      chmod +x /usr/local/bin/mirror-ubuntu.sh
-
-      # Create CentOS mirror script
-      cat > /usr/local/bin/mirror-centos.sh << 'EOF'
-      #!/bin/bash
-
-      echo "Starting CentOS repository mirror sync..."
-      mkdir -p /var/www/repos/centos/{8,9}
-
-      # CentOS Stream 8
-      rsync -avz --delete rsync://mirrors.nic.cz/centos/8-stream/ /var/www/repos/centos/8/
-
-      # CentOS Stream 9
-      rsync -avz --delete rsync://mirrors.nic.cz/centos/9-stream/ /var/www/repos/centos/9/
-
-      echo "CentOS mirror sync completed"
-      EOF
-
-      # Create RHEL mirror script (requires subscription)
+      # Create RHEL repository sync script
       cat > /usr/local/bin/mirror-rhel.sh << 'EOF'
       #!/bin/bash
+      echo "Starting RHEL repository mirror sync at $(date)"
 
-      # Check if RHEL credentials are provided
-      if [ -z "$RHEL_USERNAME" ] || [ -z "$RHEL_PASSWORD" ]; then
-          echo "RHEL credentials not provided. Skipping RHEL mirror sync."
-          echo "To enable: export RHEL_USERNAME=xxx RHEL_PASSWORD=xxx"
-          exit 0
-      fi
-
-      echo "Starting RHEL repository mirror sync..."
-
-      # Register system (if not already registered)
+      # Check if registered
       if ! subscription-manager status | grep -q "Overall Status: Current"; then
-          echo "Registering system with Red Hat..."
-          subscription-manager register --username="$RHEL_USERNAME" --password="$RHEL_PASSWORD" --auto-attach
+          if [ -n "$RHEL_USERNAME" ] && [ -n "$RHEL_PASSWORD" ]; then
+              echo "Registering system with Red Hat..."
+              subscription-manager register --username="$RHEL_USERNAME" --password="$RHEL_PASSWORD" --auto-attach
+          else
+              echo "RHEL credentials not provided. Cannot sync RHEL repositories."
+              exit 1
+          fi
       fi
 
       # Enable required repositories
-      subscription-manager repos --enable rhel-7-server-rpms \
-                                --enable rhel-7-server-extras-rpms \
-                                --enable rhel-7-server-optional-rpms \
-                                --enable rhel-8-for-x86_64-baseos-rpms \
+      subscription-manager repos --enable rhel-8-for-x86_64-baseos-rpms \
                                 --enable rhel-8-for-x86_64-appstream-rpms \
                                 --enable codeready-builder-for-rhel-8-x86_64-rpms \
                                 --enable rhel-9-for-x86_64-baseos-rpms \
                                 --enable rhel-9-for-x86_64-appstream-rpms \
                                 --enable codeready-builder-for-rhel-9-x86_64-rpms
 
-      # Sync RHEL 7
-      echo "Syncing RHEL 7..."
-      reposync --gpgcheck --newest-only --delete --downloadcomps \
-               --download-metadata --repoid=rhel-7-server-rpms \
-               --destdir=/var/www/repos/rhel/7/Server/
-
-      # Sync RHEL 8
-      echo "Syncing RHEL 8..."
-      for repo in rhel-8-for-x86_64-baseos-rpms rhel-8-for-x86_64-appstream-rpms; do
+      # Sync RHEL 8 repositories
+      echo "Syncing RHEL 8 repositories..."
+      for repo in rhel-8-for-x86_64-baseos-rpms rhel-8-for-x86_64-appstream-rpms codeready-builder-for-rhel-8-x86_64-rpms; do
+          echo "Syncing $repo..."
           reposync --gpgcheck --newest-only --delete --downloadcomps \
                    --download-metadata --repoid=$repo \
                    --destdir=/var/www/repos/rhel/8/
       done
 
-      # Sync RHEL 9
-      echo "Syncing RHEL 9..."
-      for repo in rhel-9-for-x86_64-baseos-rpms rhel-9-for-x86_64-appstream-rpms; do
+      # Sync RHEL 9 repositories
+      echo "Syncing RHEL 9 repositories..."
+      for repo in rhel-9-for-x86_64-baseos-rpms rhel-9-for-x86_64-appstream-rpms codeready-builder-for-rhel-9-x86_64-rpms; do
+          echo "Syncing $repo..."
           reposync --gpgcheck --newest-only --delete --downloadcomps \
                    --download-metadata --repoid=$repo \
                    --destdir=/var/www/repos/rhel/9/
       done
 
       # Create repository metadata
-      for version in 7 8 9; do
-          find /var/www/repos/rhel/$version -name "*.rpm" -type d | while read repo_dir; do
-              if [ -d "$repo_dir" ]; then
-                  echo "Creating metadata for $repo_dir"
-                  createrepo_c --update "$repo_dir"
+      for version in 8 9; do
+          for repo_type in BaseOS AppStream CodeReady; do
+              repo_path="/var/www/repos/rhel/$version/$repo_type"
+              if [ -d "$repo_path" ] && [ -n "$(find "$repo_path" -name "*.rpm" -type f)" ]; then
+                  echo "Creating metadata for $repo_path"
+                  createrepo_c --update "$repo_path"
               fi
           done
       done
 
-      echo "RHEL mirror sync completed"
+      # Create repository index
+      cat > /var/www/repos/index.html << 'HTML'
+      <!DOCTYPE html>
+      <html>
+      <head><title>Red Hat Repository Mirror</title></head>
+      <body>
+      <h1>Red Hat Enterprise Linux Repository Mirror</h1>
+      <ul>
+        <li><a href="rhel/">RHEL Repositories</a>
+          <ul>
+            <li><a href="rhel/8/">RHEL 8</a></li>
+            <li><a href="rhel/9/">RHEL 9</a></li>
+          </ul>
+        </li>
+        <li><a href="centos/">CentOS Stream Repositories</a>
+          <ul>
+            <li><a href="centos/8-stream/">CentOS Stream 8</a></li>
+            <li><a href="centos/9-stream/">CentOS Stream 9</a></li>
+          </ul>
+        </li>
+      </ul>
+      <p>Last updated: $(date)</p>
+      </body>
+      </html>
+      HTML
+
+      echo "RHEL mirror sync completed at $(date)"
       EOF
 
       chmod +x /usr/local/bin/mirror-rhel.sh
 
+      # Create CentOS Stream mirror script
+      cat > /usr/local/bin/mirror-centos.sh << 'EOF'
+      #!/bin/bash
+      echo "Starting CentOS Stream repository mirror sync at $(date)"
+
+      # Sync CentOS Stream 8
+      echo "Syncing CentOS Stream 8..."
+      rsync -avz --delete --exclude='debug/' \
+        rsync://mirror.centos.org/centos/8-stream/ \
+        /var/www/repos/centos/8-stream/
+
+      # Sync CentOS Stream 9
+      echo "Syncing CentOS Stream 9..."
+      rsync -avz --delete --exclude='debug/' \
+        rsync://mirror.centos.org/centos/9-stream/ \
+        /var/www/repos/centos/9-stream/
+
+      echo "CentOS Stream mirror sync completed at $(date)"
+      EOF
+
+      chmod +x /usr/local/bin/mirror-centos.sh
+
   - path: /etc/cron.d/repo-sync
     content: |
-      # Repository synchronization schedule
-      0 2 * * * root /usr/local/bin/mirror-ubuntu.sh >> /var/log/repo-sync.log 2>&1
-      30 2 * * * root /usr/local/bin/mirror-centos.sh >> /var/log/repo-sync.log 2>&1
-      0 3 * * * root RHEL_USERNAME="${redhat_username}" RHEL_PASSWORD="${redhat_password}" /usr/local/bin/mirror-rhel.sh >> /var/log/repo-sync.log 2>&1
-      0 4 * * * root /usr/local/bin/sync-to-blob.sh >> /var/log/blob-sync.log 2>&1
+      # RHEL repository synchronization schedule
+      0 2 * * * root RHEL_USERNAME="${redhat_username}" RHEL_PASSWORD="${redhat_password}" /usr/local/bin/mirror-rhel.sh >> /var/log/rhel-sync.log 2>&1
+      30 3 * * * root /usr/local/bin/mirror-centos.sh >> /var/log/centos-sync.log 2>&1
+      0 5 * * * root /usr/local/bin/sync-to-blob.sh >> /var/log/blob-sync.log 2>&1
+
+  - path: /etc/yum.repos.d/local-mirror.repo
+    content: |
+      # Local RHEL mirror configuration template
+      [rhel-8-baseos-local]
+      name=Red Hat Enterprise Linux 8 - BaseOS (Local Mirror)
+      baseurl=http://localhost/rhel/8/BaseOS
+      enabled=0
+      gpgcheck=1
+      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+      [rhel-8-appstream-local]
+      name=Red Hat Enterprise Linux 8 - AppStream (Local Mirror)
+      baseurl=http://localhost/rhel/8/AppStream
+      enabled=0
+      gpgcheck=1
+      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+      [rhel-9-baseos-local]
+      name=Red Hat Enterprise Linux 9 - BaseOS (Local Mirror)
+      baseurl=http://localhost/rhel/9/BaseOS
+      enabled=0
+      gpgcheck=1
+      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
+
+      [rhel-9-appstream-local]
+      name=Red Hat Enterprise Linux 9 - AppStream (Local Mirror)
+      baseurl=http://localhost/rhel/9/AppStream
+      enabled=0
+      gpgcheck=1
+      gpgkey=file:///etc/pki/rpm-gpg/RPM-GPG-KEY-redhat-release
 
 runcmd:
   - /usr/local/bin/setup-mirror.sh
-  - systemctl restart cron
+  - systemctl restart crond

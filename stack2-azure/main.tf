@@ -1,4 +1,4 @@
-# main.tf (root module)
+# stack2-azure/main.tf (root module) - Updated for RHEL
 
 provider "azurerm" {
   features {}
@@ -41,7 +41,7 @@ resource "azurerm_public_ip" "public_ip" {
   allocation_method   = "Static"
 }
 
-# Create a network security group
+# Create a network security group with RHEL-specific rules
 resource "azurerm_network_security_group" "nsg" {
   name                = "${var.infprefix}-nsg"
   location            = azurerm_resource_group.rg.location
@@ -57,6 +57,19 @@ resource "azurerm_network_security_group" "nsg" {
     source_port_range          = "*"
     destination_port_range     = "22"
     source_address_prefix      = "*"  # In production, limit this to your IP
+    destination_address_prefix = "*"
+  }
+
+  # Allow HTTP for RHEL repo access
+  security_rule {
+    name                       = "HTTP"
+    priority                   = 1002
+    direction                  = "Inbound"
+    access                     = "Allow"
+    protocol                   = "Tcp"
+    source_port_range          = "*"
+    destination_port_range     = "80"
+    source_address_prefix      = "10.0.0.0/16"  # Only from local VNet
     destination_address_prefix = "*"
   }
 }
@@ -82,16 +95,28 @@ resource "azurerm_subnet_network_security_group_association" "example" {
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-module "linux_vm" {
+module "rhel_vm" {
   source   = "./modules/azure_vm"
   for_each = var.virtual_machines
 
   resource_group_name  = azurerm_resource_group.rg.name
   location             = azurerm_resource_group.rg.location
-  vm_name              = "azr-srv-lnx-${format("%02d", each.value.index)}"
+  vm_name              = "azr-srv-rhel-${format("%02d", each.value.index)}"
   vm_size              = each.value.vm_size
   network_interface_id = azurerm_network_interface.nic[each.key].id
   admin_username       = each.value.admin_username
+
+  # RHEL-specific configuration
+  image_publisher = "RedHat"
+  image_offer     = "RHEL"
+  image_sku       = each.value.rhel_version
+  image_version   = "latest"
+
+  # Red Hat subscription details
+  enable_rhel_registration = var.enable_rhel_registration
+  redhat_username         = var.redhat_username
+  redhat_password         = var.redhat_password
+  mirror_server_ip        = var.mirror_server_ip
 
   # Pass auto-shutdown variables to module
   enable_auto_shutdown                = var.enable_auto_shutdown
@@ -102,7 +127,8 @@ module "linux_vm" {
   tags = merge(
     {
       Environment = var.environment
-      Project     = "TerraformLearning"
+      Project     = "RHELLearning"
+      OS          = "RHEL"
     },
     each.value.tags
   )

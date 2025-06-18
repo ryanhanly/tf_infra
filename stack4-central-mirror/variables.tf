@@ -29,37 +29,26 @@ variable "location" {
 
 variable "resource_group_name" {
   type        = string
-  default     = "azr-mirror-rg"
-  description = "Name of the resource group for central mirror infrastructure"
-}
-
-variable "storage_account_name" {
-  type        = string
-  default     = "azrmirrorreposts"
-  description = "Storage account name for repository storage (must be globally unique)"
-
-  validation {
-    condition     = length(var.storage_account_name) >= 3 && length(var.storage_account_name) <= 24
-    error_message = "Storage account name must be between 3 and 24 characters."
-  }
+  default     = "azr-rhel-mirror-rg"
+  description = "Name of the resource group for RHEL mirror infrastructure"
 }
 
 variable "infprefix" {
   type        = string
-  default     = "azr-mirror"
+  default     = "azr-rhel"
   description = "Prefix for naming infrastructure resources"
 }
 
 variable "vm_size" {
   type        = string
-  default     = "Standard_D2s_v3"
-  description = "Size of the central mirror VM (needs more resources for repo sync)"
+  default     = "Standard_D4s_v3"
+  description = "Size of the RHEL mirror VM (needs substantial resources for repo sync)"
 }
 
 variable "admin_username" {
   type        = string
-  default     = "azureadmin"
-  description = "Admin username for the VM"
+  default     = "rhel-admin"
+  description = "Admin username for the RHEL VM"
 }
 
 variable "environment" {
@@ -68,24 +57,34 @@ variable "environment" {
   description = "Environment designation"
 }
 
-variable "enable_redhat_repos" {
-  type        = bool
-  default     = false
-  description = "Enable RedHat repository mirroring (requires RHEL subscription)"
-}
-
 variable "redhat_username" {
   type        = string
-  default     = ""
-  description = "RedHat subscription username (if using RHEL repos)"
+  description = "Red Hat Developer subscription username"
   sensitive   = true
 }
 
 variable "redhat_password" {
   type        = string
-  default     = ""
-  description = "RedHat subscription password (if using RHEL repos)"
+  description = "Red Hat Developer subscription password"
   sensitive   = true
+}
+
+variable "rhel_versions" {
+  type        = list(string)
+  default     = ["8", "9"]
+  description = "RHEL major versions to mirror"
+}
+
+variable "include_centos_stream" {
+  type        = bool
+  default     = true
+  description = "Include CentOS Stream repositories"
+}
+
+variable "centos_stream_versions" {
+  type        = list(string)
+  default     = ["8", "9"]
+  description = "CentOS Stream versions to mirror"
 }
 
 variable "sync_schedule_hour" {
@@ -101,12 +100,12 @@ variable "sync_schedule_hour" {
 
 variable "retention_days" {
   type        = number
-  default     = 90
-  description = "Blob retention period in days (recommended: 90 for full patch cycles)"
+  default     = 180
+  description = "Blob retention period in days (longer for enterprise repos)"
 
   validation {
-    condition     = var.retention_days >= 30 && var.retention_days <= 365
-    error_message = "Retention days must be between 30 and 365."
+    condition     = var.retention_days >= 90 && var.retention_days <= 365
+    error_message = "Retention days must be between 90 and 365."
   }
 }
 
@@ -137,40 +136,59 @@ variable "auto_shutdown_notification_email" {
 variable "admin_source_ips" {
   type        = list(string)
   default     = [
-    "82.0.0.0/12",        # ISP ASN public range
+    "82.0.0.0/12",        # ISP range
     "10.0.0.0/8",         # RFC-1918 Class A private
     "172.16.0.0/12",      # RFC-1918 Class B private
     "192.168.0.0/16"      # RFC-1918 Class C private
   ]
-  description = "IP ranges allowed for SSH admin access (ISP + RFC-1918 private ranges)"
+  description = "IP ranges allowed for SSH admin access"
 }
 
 variable "allowed_aws_ips" {
   type        = list(string)
   default     = []
-  description = "List of AWS public IPs allowed to access the mirror (e.g., NAT Gateway IPs)"
+  description = "List of AWS public IPs allowed to access the RHEL mirror (e.g., NAT Gateway IPs)"
 }
 
 variable "allowed_azure_vnets" {
   type        = list(string)
-  default     = ["10.0.0.0/16"]  # Your existing Azure VNet CIDR
+  default     = ["10.0.0.0/16"]
   description = "List of Azure VNet CIDR blocks allowed to access the mirror"
 }
 
 variable "enable_public_access" {
   type        = bool
   default     = false
-  description = "Enable public access to the mirror server (not recommended for production)"
+  description = "Enable public access to the RHEL mirror server (not recommended for production)"
+}
+
+variable "data_disk_size_gb" {
+  type        = number
+  default     = 1024
+  description = "Size of data disk for RHEL repositories in GB (RHEL repos are large)"
+
+  validation {
+    condition     = var.data_disk_size_gb >= 512 && var.data_disk_size_gb <= 4096
+    error_message = "Data disk size must be between 512GB and 4TB for RHEL repositories."
+  }
+}
+
+variable "enable_rhel_insights" {
+  type        = bool
+  default     = true
+  description = "Enable Red Hat Insights for system monitoring and recommendations"
 }
 
 variable "tags" {
   type        = map(string)
   default     = {
     Environment = "Lab"
-    Service     = "CentralMirror"
-    Purpose     = "LinuxRepositoryMirror"
+    Service     = "RHELMirror"
+    Purpose     = "RedHatRepositoryMirror"
     CostCenter  = "Learning"
     AutoShutdown = "Enabled"
+    OS          = "RHEL"
+    Subscription = "RedHatDeveloper"
   }
   description = "Tags to apply to resources"
 }

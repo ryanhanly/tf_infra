@@ -1,5 +1,5 @@
 # stack4-central-mirror/main.tf
-# Central Linux Repository Mirror Server
+# Central Red Hat Repository Mirror Server
 
 terraform {
   required_providers {
@@ -44,38 +44,23 @@ resource "azurerm_resource_group" "mirror_rg" {
 
 # Storage Account for Repository Storage
 resource "azurerm_storage_account" "repo_storage" {
-  name                     = "repostore${random_id.storage_suffix.hex}"
+  name                     = "rhelrepo${random_id.storage_suffix.hex}"
   resource_group_name      = azurerm_resource_group.mirror_rg.name
   location                 = azurerm_resource_group.mirror_rg.location
   account_tier             = "Standard"
   account_replication_type = "GRS"
 
-  # Allow public access for now - can restrict manually later
   public_network_access_enabled = true
 
   blob_properties {
     delete_retention_policy {
       days = var.retention_days
     }
-
     versioning_enabled = true
   }
 
   tags = var.tags
 }
-
-# Apply network restrictions after container creation
-# this messes about with TF, maybe leave them out
-# resource "azurerm_storage_account_network_rules" "repo_storage_rules" {
-#   storage_account_id = azurerm_storage_account.repo_storage.id
-
-#   default_action = "Deny"
-#   bypass         = ["AzureServices"]
-
-#   virtual_network_subnet_ids = [azurerm_subnet.mirror_subnet.id]
-
-#   depends_on = [azurerm_storage_container.repo_container]
-# }
 
 resource "azurerm_storage_management_policy" "repo_lifecycle" {
   storage_account_id = azurerm_storage_account.repo_storage.id
@@ -85,7 +70,7 @@ resource "azurerm_storage_management_policy" "repo_lifecycle" {
     enabled = true
 
     filters {
-      prefix_match = ["rhel-updates/"]
+      prefix_match = ["rhel/", "centos/"]
       blob_types   = ["blockBlob"]
     }
 
@@ -93,7 +78,7 @@ resource "azurerm_storage_management_policy" "repo_lifecycle" {
       base_blob {
         tier_to_cool_after_days_since_modification_greater_than    = 30
         tier_to_archive_after_days_since_modification_greater_than = 90
-        delete_after_days_since_modification_greater_than          = 365
+        delete_after_days_since_modification_greater_than          = var.retention_days
       }
     }
   }
@@ -101,7 +86,7 @@ resource "azurerm_storage_management_policy" "repo_lifecycle" {
 
 # Blob Container for repositories
 resource "azurerm_storage_container" "repo_container" {
-  name                  = "linux-repos"
+  name                  = "rhel-repos"
   storage_account_id    = azurerm_storage_account.repo_storage.id
   container_access_type = "blob"
 }
@@ -129,7 +114,6 @@ resource "azurerm_subnet" "mirror_subnet" {
   resource_group_name  = azurerm_resource_group.mirror_rg.name
   virtual_network_name = azurerm_virtual_network.mirror_vnet.name
   address_prefixes     = ["172.16.1.0/24"]
-
   service_endpoints    = ["Microsoft.Storage"]
 }
 
@@ -144,46 +128,7 @@ resource "azurerm_public_ip" "mirror_pip" {
   tags                = var.tags
 }
 
-# Private DNS Zone for storage
-resource "azurerm_private_dns_zone" "storage_dns" {
-  name                = "privatelink.blob.core.windows.net"
-  resource_group_name = azurerm_resource_group.mirror_rg.name
-  tags                = var.tags
-}
-
-# Link private DNS zone to VNet
-resource "azurerm_private_dns_zone_virtual_network_link" "storage_dns_link" {
-  name                  = "${var.infprefix}-storage-dns-link"
-  resource_group_name   = azurerm_resource_group.mirror_rg.name
-  private_dns_zone_name = azurerm_private_dns_zone.storage_dns.name
-  virtual_network_id    = azurerm_virtual_network.mirror_vnet.id
-  registration_enabled  = false
-  tags                  = var.tags
-}
-
-# Private endpoint for storage account
-resource "azurerm_private_endpoint" "storage_pe" {
-  name                = "${var.infprefix}-storage-pe"
-  location            = azurerm_resource_group.mirror_rg.location
-  resource_group_name = azurerm_resource_group.mirror_rg.name
-  subnet_id           = azurerm_subnet.private_endpoint_subnet.id
-
-  private_service_connection {
-    name                           = "${var.infprefix}-storage-psc"
-    private_connection_resource_id = azurerm_storage_account.repo_storage.id
-    subresource_names              = ["blob"]
-    is_manual_connection           = false
-  }
-
-  private_dns_zone_group {
-    name                 = "storage-dns-zone-group"
-    private_dns_zone_ids = [azurerm_private_dns_zone.storage_dns.id]
-  }
-
-  tags = var.tags
-}
-
-# NSG
+# NSG with Red Hat specific rules
 resource "azurerm_network_security_group" "mirror_nsg" {
   name                = "${var.infprefix}-mirror-nsg"
   location            = azurerm_resource_group.mirror_rg.location
@@ -202,39 +147,26 @@ resource "azurerm_network_security_group" "mirror_nsg" {
   }
 
   security_rule {
-    name                       = "AllowAWSIPs"
+    name                       = "HTTP_RHEL_Repos"
     priority                   = 1002
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_ranges    = ["80", "443"]
-    source_address_prefixes    = length(var.allowed_aws_ips) > 0 ? var.allowed_aws_ips : ["10.255.255.255/32"]
+    destination_port_range     = "80"
+    source_address_prefixes    = concat(var.allowed_aws_ips, var.allowed_azure_vnets)
     destination_address_prefix = "*"
   }
 
   security_rule {
-    name                       = "AllowAzureVNets"
+    name                       = "HTTPS_RHEL_Repos"
     priority                   = 1003
     direction                  = "Inbound"
     access                     = "Allow"
     protocol                   = "Tcp"
     source_port_range          = "*"
-    destination_port_ranges    = ["80", "443"]
-    source_address_prefixes    = length(var.allowed_azure_vnets) > 0 ? var.allowed_azure_vnets : ["10.255.255.255/32"]
-    destination_address_prefix = "*"
-  }
-
-  # Explicit deny rule (optional - default deny exists)
-  security_rule {
-    name                       = "DenyAllOther"
-    priority                   = 4000
-    direction                  = "Inbound"
-    access                     = "Deny"
-    protocol                   = "*"
-    source_port_range          = "*"
-    destination_port_range     = "*"
-    source_address_prefix      = "*"
+    destination_port_range     = "443"
+    source_address_prefixes    = concat(var.allowed_aws_ips, var.allowed_azure_vnets)
     destination_address_prefix = "*"
   }
 
@@ -272,7 +204,7 @@ resource "tls_private_key" "mirror_ssh_key" {
 # Save private key locally
 resource "local_file" "mirror_private_key" {
   content         = tls_private_key.mirror_ssh_key.private_key_pem
-  filename        = "${path.module}/ssh_keys/azr-srv-mirror-01.pem"
+  filename        = "${path.module}/ssh_keys/azr-srv-rhel-01.pem"
   file_permission = "0600"
 
   provisioner "local-exec" {
@@ -280,9 +212,9 @@ resource "local_file" "mirror_private_key" {
   }
 }
 
-# Virtual Machine
+# RHEL Virtual Machine
 resource "azurerm_linux_virtual_machine" "mirror_vm" {
-  name                = "azr-srv-mirror-01"
+  name                = "azr-srv-rhel-01"
   resource_group_name = azurerm_resource_group.mirror_rg.name
   location            = azurerm_resource_group.mirror_rg.location
   size                = var.vm_size
@@ -301,18 +233,19 @@ resource "azurerm_linux_virtual_machine" "mirror_vm" {
 
   os_disk {
     caching              = "ReadWrite"
-    storage_account_type = "Standard_LRS"  # Cheaper than Premium for lab
-    disk_size_gb         = 64              # Reduced from 128GB
+    storage_account_type = "Premium_LRS"  # Better performance for repo operations
+    disk_size_gb         = 128
   }
 
+  # RHEL 9 image for Red Hat Developer subscription
   source_image_reference {
-    publisher = "Canonical"
-    offer     = "0001-com-ubuntu-server-jammy"
-    sku       = "22_04-lts-gen2"
+    publisher = "RedHat"
+    offer     = "RHEL"
+    sku       = "9_4"  # RHEL 9.4
     version   = "latest"
   }
 
-  # Cloud-init script for initial setup
+  # Red Hat specific cloud-init
   custom_data = base64encode(templatefile("${path.module}/cloud-init.yml", {
     storage_account_name = azurerm_storage_account.repo_storage.name
     storage_account_key  = azurerm_storage_account.repo_storage.primary_access_key
@@ -325,10 +258,20 @@ resource "azurerm_linux_virtual_machine" "mirror_vm" {
     type = "SystemAssigned"
   }
 
-  tags = var.tags
+  # Accept Red Hat terms
+  plan {
+    name      = "9_4"
+    product   = "rhel"
+    publisher = "redhat"
+  }
+
+  tags = merge(var.tags, {
+    OS = "RHEL"
+    OSVersion = "9.4"
+  })
 }
 
-# Auto-shutdown schedule (for cost optimization in lab environments)
+# Auto-shutdown schedule
 resource "azurerm_dev_test_global_vm_shutdown_schedule" "mirror_shutdown" {
   count              = var.enable_auto_shutdown ? 1 : 0
   virtual_machine_id = azurerm_linux_virtual_machine.mirror_vm.id
@@ -340,21 +283,21 @@ resource "azurerm_dev_test_global_vm_shutdown_schedule" "mirror_shutdown" {
 
   notification_settings {
     enabled         = var.auto_shutdown_notification_email != ""
-    time_in_minutes = 30  # 30 minutes warning
+    time_in_minutes = 30
     email           = var.auto_shutdown_notification_email
   }
 
   tags = var.tags
 }
 
-# Data disk for repository storage
+# Data disk for repository storage (XFS filesystem for RHEL)
 resource "azurerm_managed_disk" "mirror_data_disk" {
   name                 = "${azurerm_linux_virtual_machine.mirror_vm.name}-datadisk"
   location             = azurerm_resource_group.mirror_rg.location
   resource_group_name  = azurerm_resource_group.mirror_rg.name
-  storage_account_type = "Standard_LRS"  # Cost-effective for lab
+  storage_account_type = "Premium_LRS"  # Better performance for repo sync
   create_option        = "Empty"
-  disk_size_gb         = 256             # Reduced from 512GB
+  disk_size_gb         = var.data_disk_size_gb
   tags                 = var.tags
 }
 
@@ -366,13 +309,6 @@ resource "azurerm_virtual_machine_data_disk_attachment" "mirror_disk_attach" {
   caching            = "ReadWrite"
 }
 
-# Grant VM access to storage account (commented out due to permissions)
-# resource "azurerm_role_assignment" "mirror_storage_access" {
-#   scope                = azurerm_storage_account.repo_storage.id
-#   role_definition_name = "Storage Blob Data Contributor"
-#   principal_id         = azurerm_linux_virtual_machine.mirror_vm.identity[0].principal_id
-# }
-
 # Azure Automation Account for scheduled sync
 resource "azurerm_automation_account" "repo_automation" {
   name                = "${var.infprefix}-repo-automation"
@@ -380,11 +316,15 @@ resource "azurerm_automation_account" "repo_automation" {
   resource_group_name = azurerm_resource_group.mirror_rg.name
   sku_name           = "Basic"
   tags               = var.tags
+
+  identity {
+    type = "SystemAssigned"
+  }
 }
 
-# Automation runbook for azcopy sync
+# Automation runbook for RHEL repo sync
 resource "azurerm_automation_runbook" "sync_repos" {
-  name                    = "Sync-Linux-Repos"
+  name                    = "Sync-RHEL-Repos"
   location                = azurerm_resource_group.mirror_rg.location
   resource_group_name     = azurerm_resource_group.mirror_rg.name
   automation_account_name = azurerm_automation_account.repo_automation.name
@@ -404,13 +344,13 @@ resource "azurerm_automation_runbook" "sync_repos" {
 
 # Schedule for daily sync
 resource "azurerm_automation_schedule" "daily_sync" {
-  name                    = "DailyRepoSync"
+  name                    = "DailyRHELRepoSync"
   resource_group_name     = azurerm_resource_group.mirror_rg.name
   automation_account_name = azurerm_automation_account.repo_automation.name
   frequency               = "Day"
   interval                = 1
   start_time             = timeadd(timestamp(), "10m")
-  description            = "Daily repository synchronization"
+  description            = "Daily RHEL repository synchronization"
 }
 
 # Link schedule to runbook

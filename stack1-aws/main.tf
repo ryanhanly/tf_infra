@@ -27,45 +27,85 @@ provider "aws" {
   region = var.aws_region
 }
 
-resource "aws_vpc" "linux_vpc" {
-  cidr_block = var.vpc_cidr
-  tags       = { Name = "${var.name_prefix}-vpc" }
+# Data source to find RHEL AMIs
+data "aws_ami" "rhel" {
+  for_each    = var.server_instances
+  most_recent = true
+  owners      = ["309956199498"] # Red Hat's AWS account
+
+  filter {
+    name   = "name"
+    values = ["RHEL-${each.value.rhel_version}*"]
+  }
+
+  filter {
+    name   = "architecture"
+    values = ["x86_64"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
 }
 
-resource "aws_subnet" "linux_subnet" {
-  vpc_id                  = aws_vpc.linux_vpc.id
+resource "aws_vpc" "rhel_vpc" {
+  cidr_block           = var.vpc_cidr
+  enable_dns_hostnames = true
+  enable_dns_support   = true
+  tags                 = { Name = "${var.name_prefix}-vpc" }
+}
+
+resource "aws_subnet" "rhel_subnet" {
+  vpc_id                  = aws_vpc.rhel_vpc.id
   cidr_block              = var.subnet_cidr
   map_public_ip_on_launch = true
+  availability_zone       = data.aws_availability_zones.available.names[0]
   tags                    = { Name = "${var.name_prefix}-subnet" }
 }
 
-resource "aws_internet_gateway" "linux_igw" {
-  vpc_id = aws_vpc.linux_vpc.id
+data "aws_availability_zones" "available" {
+  state = "available"
+}
+
+resource "aws_internet_gateway" "rhel_igw" {
+  vpc_id = aws_vpc.rhel_vpc.id
   tags   = { Name = "${var.name_prefix}-igw" }
 }
 
-resource "aws_route_table" "linux_rt" {
-  vpc_id = aws_vpc.linux_vpc.id
+resource "aws_route_table" "rhel_rt" {
+  vpc_id = aws_vpc.rhel_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.linux_igw.id
+    gateway_id = aws_internet_gateway.rhel_igw.id
   }
   tags = { Name = "${var.name_prefix}-rt" }
 }
 
-resource "aws_route_table_association" "linux_rta" {
-  subnet_id      = aws_subnet.linux_subnet.id
-  route_table_id = aws_route_table.linux_rt.id
+resource "aws_route_table_association" "rhel_rta" {
+  subnet_id      = aws_subnet.rhel_subnet.id
+  route_table_id = aws_route_table.rhel_rt.id
 }
 
-resource "aws_security_group" "linux_sg" {
-  vpc_id = aws_vpc.linux_vpc.id
+resource "aws_security_group" "rhel_sg" {
+  name_prefix = "${var.name_prefix}-sg"
+  vpc_id      = aws_vpc.rhel_vpc.id
+
   ingress {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
     cidr_blocks = var.ssh_allowed_cidr
   }
+
+  # Allow HTTP for RHEL repo access within VPC
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = [var.vpc_cidr]
+  }
+
   egress {
     from_port   = 0
     to_port     = 0
@@ -83,19 +123,8 @@ resource "tls_private_key" "ssh_key" {
 }
 
 locals {
-  server_os_types = {
-    for k, v in var.server_instances : k => (
-      contains(["ubuntu", "linux"], lower(v.os_type)) ? "lnx" :
-      v.os_type == "windows" ? "win" :
-      "lnx"
-    )
-  }
-}
-
-# Get the OS type and create the server name using the same pattern
-locals {
   server_names = {
-    for k, v in var.server_instances : k => "aws-srv-${local.server_os_types[k]}-${format("%02d", v.index)}"
+    for k, v in var.server_instances : k => "aws-srv-rhel-${format("%02d", v.index)}"
   }
 }
 
@@ -118,19 +147,37 @@ resource "local_file" "private_key" {
   }
 }
 
-resource "aws_instance" "linux_servers" {
+# Create user data script for RHEL configuration
+locals {
+  rhel_user_data = base64encode(templatefile("${path.module}/rhel-userdata.sh", {
+    redhat_username  = var.redhat_username
+    redhat_password  = var.redhat_password
+    mirror_server_ip = var.mirror_server_ip
+  }))
+}
+
+resource "aws_instance" "rhel_servers" {
   for_each = var.server_instances
 
-  ami                    = each.value.ami_id
+  ami                    = data.aws_ami.rhel[each.key].id
   instance_type          = each.value.instance_type
-  subnet_id              = aws_subnet.linux_subnet.id
-  vpc_security_group_ids = [aws_security_group.linux_sg.id]
+  subnet_id              = aws_subnet.rhel_subnet.id
+  vpc_security_group_ids = [aws_security_group.rhel_sg.id]
   key_name               = aws_key_pair.server_key[each.key].key_name
+  user_data              = local.rhel_user_data
+
+  root_block_device {
+    volume_type = "gp3"
+    volume_size = 20
+    encrypted   = true
+  }
 
   tags = merge(
     {
       Name = local.server_names[each.key]
       Environment = "Development"
+      OS = "RHEL"
+      RHELVersion = each.value.rhel_version
     },
     each.value.additional_tags
   )
