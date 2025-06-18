@@ -40,21 +40,21 @@ variable "server_instances" {
 
   default = {
     "server1" = {
-      ami_id          = "ami-0e9085e60087ce171"  # Ubuntu 24.04 LTS in eu-west-2 (free tier)
+      ami_id          = "ami-044415bb13eee2391"  # Ubuntu AMI for eu-west-2
       instance_type   = "t2.micro"
       os_type         = "ubuntu"
       index           = 1
       additional_tags = {}
     }
     "server2" = {
-      ami_id          = "ami-0e9085e60087ce171"  # Ubuntu 24.04 LTS in eu-west-2 (free tier)
+      ami_id          = "ami-044415bb13eee2391"  # Ubuntu AMI for eu-west-2
       instance_type   = "t2.micro"
       os_type         = "ubuntu"
       index           = 2
       additional_tags = { "Purpose" = "Testing" }
     }
     "server3" = {
-      ami_id          = "ami-0e9085e60087ce171"  # Ubuntu 24.04 LTS in eu-west-2 (free tier)
+      ami_id          = "ami-044415bb13eee2391"  # Ubuntu AMI for eu-west-2
       instance_type   = "t2.micro"
       os_type         = "ubuntu"
       index           = 3

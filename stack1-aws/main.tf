@@ -10,7 +10,7 @@ terraform {
   required_providers {
     aws = {
       source = "hashicorp/aws"
-      version = "~> 4.0"
+      version = "~> 5.0"
     }
     tls = {
       source = "hashicorp/tls"
@@ -130,6 +130,7 @@ resource "aws_instance" "linux_servers" {
   tags = merge(
     {
       Name = local.server_names[each.key]
+      Environment = "Development"
     },
     each.value.additional_tags
   )
