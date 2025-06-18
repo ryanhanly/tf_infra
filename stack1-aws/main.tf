@@ -85,7 +85,7 @@ resource "tls_private_key" "ssh_key" {
 # Create the server name based on OS type
 locals {
   server_names = {
-    for k, v in var.server_instances : k => "aws-${v.os_type}-vm-${format("%02d", v.index)}"
+    for k, v in var.server_instances : k => "aws-srv-${v.os_type == "ubuntu" || v.os_type == "linux" ? "lnx" : v.os_type == "windows" ? "win" : "lnx"}-${format("%02d", v.index)}"
   }
 }
 
