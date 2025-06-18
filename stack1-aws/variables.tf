@@ -1,21 +1,13 @@
-# Add these variables to stack1-aws/variables.tf
-variable aws_region {
+variable "aws_region" {
   type        = string
   default     = "eu-west-2"
   description = "AWS Region for deploying resources"
 }
 
-
-variable "enable_auto_shutdown" {
-  type        = bool
-  default     = true
-  description = "Enable auto-shutdown for cost savings (lab environments only)"
-}
-
 variable "name_prefix" {
   type        = string
-  default     = "linux"
-  description = "Prefix for naming resources"
+  default     = "aws-infra"
+  description = "Prefix for naming infrastructure resources"
 }
 
 variable "vpc_cidr" {
@@ -36,42 +28,37 @@ variable "ssh_allowed_cidr" {
   description = "CIDR blocks allowed for SSH access (restrict in production)"
 }
 
-variable "key_name" {
-  type        = string
-  default     = "srv-ub-key"
-  description = "Name of the key pair to use for SSH access"
-}
-
 variable "server_instances" {
   type = map(object({
     ami_id          = string
     instance_type   = string
+    os_type         = string
     index           = number
     additional_tags = map(string)
   }))
   description = "Map of servers to create with their configurations"
 
   default = {
-    # This maintains your original server
     "server1" = {
-      ami_id          = "ami-0a94c8e4ca2674d5a"
+      ami_id          = "ami-0903ff18cc3c8e341"  # Ubuntu 22.04 in eu-west-2
       instance_type   = "t2.micro"
+      os_type         = "ubuntu"
       index           = 1
       additional_tags = {}
     }
-    # Example of adding another server
     "server2" = {
-      ami_id          = "ami-0a94c8e4ca2674d5a"
+      ami_id          = "ami-0903ff18cc3c8e341"  # Ubuntu 22.04 in eu-west-2
       instance_type   = "t2.micro"
+      os_type         = "ubuntu"
       index           = 2
       additional_tags = { "Purpose" = "Testing" }
     }
-    # Example of adding another server
     "server3" = {
-      ami_id          = "ami-0a94c8e4ca2674d5a"
+      ami_id          = "ami-0903ff18cc3c8e341"  # Ubuntu 22.04 in eu-west-2
       instance_type   = "t2.micro"
+      os_type         = "ubuntu"
       index           = 3
-      additional_tags = { "Purpose" = "Testing" }
+      additional_tags = { "Purpose" = "Development" }
     }
   }
 }
