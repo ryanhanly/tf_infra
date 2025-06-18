@@ -18,13 +18,13 @@ variable "vm_name" {
 variable "vm_size" {
   description = "Size of the virtual machine"
   type        = string
-  default     = "Standard_B2s"  # Better for RHEL workloads
+  default     = "Standard_B2s"
 }
 
 variable "admin_username" {
   description = "Admin username for the VM"
   type        = string
-  default     = "rhel-admin"
+  default     = "ubuntu"
 }
 
 variable "network_interface_id" {
@@ -35,19 +35,19 @@ variable "network_interface_id" {
 variable "image_publisher" {
   description = "Publisher of the VM image"
   type        = string
-  default     = "RedHat"
+  default     = "Canonical"
 }
 
 variable "image_offer" {
   description = "Offer of the VM image"
   type        = string
-  default     = "RHEL"
+  default     = "0001-com-ubuntu-server-jammy"
 }
 
 variable "image_sku" {
   description = "SKU of the VM image"
   type        = string
-  default     = "9_4"  # RHEL 9.4
+  default     = "22_04-lts-gen2"
 }
 
 variable "image_version" {
@@ -56,28 +56,8 @@ variable "image_version" {
   default     = "latest"
 }
 
-variable "enable_rhel_registration" {
-  description = "Enable RHEL registration with Red Hat"
-  type        = bool
-  default     = true
-}
-
-variable "redhat_username" {
-  description = "Red Hat subscription username"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
-
-variable "redhat_password" {
-  description = "Red Hat subscription password"
-  type        = string
-  default     = ""
-  sensitive   = true
-}
-
 variable "mirror_server_ip" {
-  description = "IP address of the RHEL mirror server"
+  description = "IP address of the Ubuntu mirror server"
   type        = string
   default     = ""
 }

@@ -76,7 +76,7 @@ variable "enable_auto_shutdown" {
 
 variable "auto_shutdown_time" {
   type        = string
-  default     = "1800"  # 18:00 (6 PM)
+  default     = "1800"
   description = "Auto-shutdown time in HHMM format (24-hour)"
 }
 
@@ -94,21 +94,19 @@ variable "auto_shutdown_notification_email" {
 
 variable "admin_source_ips" {
   type        = list(string)
-  default     = [
-    "0.0.0.0/0"  # Allow from anywhere - restrict this in production
-  ]
+  default     = ["0.0.0.0/0"]
   description = "IP ranges allowed for SSH admin access"
 }
 
 variable "allowed_aws_ips" {
   type        = list(string)
-  default     = []  # Empty by default - set in terraform.tfvars
+  default     = []
   description = "List of AWS public IPs allowed to access the Ubuntu mirror"
 }
 
 variable "allowed_azure_vnets" {
   type        = list(string)
-  default     = ["0.0.0.0/0"]  # Allow from anywhere for lab
+  default     = ["0.0.0.0/0"]
   description = "List of Azure VNet CIDR blocks allowed to access the mirror"
 }
 
@@ -126,12 +124,12 @@ variable "data_disk_size_gb" {
 variable "tags" {
   type        = map(string)
   default     = {
-    Environment = "Lab"
-    Service     = "UbuntuMirror"
-    Purpose     = "UbuntuRepositoryMirror"
-    CostCenter  = "Learning"
+    Environment  = "Lab"
+    Service      = "UbuntuMirror"
+    Purpose      = "UbuntuRepositoryMirror"
+    CostCenter   = "Learning"
     AutoShutdown = "Enabled"
-    OS          = "Ubuntu"
+    OS           = "Ubuntu"
   }
   description = "Tags to apply to resources"
 }
