@@ -27,15 +27,15 @@ provider "aws" {
   region = var.aws_region
 }
 
-# Data source to find RHEL AMIs
-data "aws_ami" "rhel" {
+# Data source to find Ubuntu AMIs
+data "aws_ami" "ubuntu" {
   for_each    = var.server_instances
   most_recent = true
-  owners      = ["309956199498"] # Red Hat's AWS account
+  owners      = ["099720109477"] # Canonical's AWS account
 
   filter {
     name   = "name"
-    values = ["RHEL-${each.value.rhel_version}*"]
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"]
   }
 
   filter {
@@ -49,15 +49,15 @@ data "aws_ami" "rhel" {
   }
 }
 
-resource "aws_vpc" "rhel_vpc" {
+resource "aws_vpc" "ubuntu_vpc" {
   cidr_block           = var.vpc_cidr
   enable_dns_hostnames = true
   enable_dns_support   = true
   tags                 = { Name = "${var.name_prefix}-vpc" }
 }
 
-resource "aws_subnet" "rhel_subnet" {
-  vpc_id                  = aws_vpc.rhel_vpc.id
+resource "aws_subnet" "ubuntu_subnet" {
+  vpc_id                  = aws_vpc.ubuntu_vpc.id
   cidr_block              = var.subnet_cidr
   map_public_ip_on_launch = true
   availability_zone       = data.aws_availability_zones.available.names[0]
@@ -68,28 +68,28 @@ data "aws_availability_zones" "available" {
   state = "available"
 }
 
-resource "aws_internet_gateway" "rhel_igw" {
-  vpc_id = aws_vpc.rhel_vpc.id
+resource "aws_internet_gateway" "ubuntu_igw" {
+  vpc_id = aws_vpc.ubuntu_vpc.id
   tags   = { Name = "${var.name_prefix}-igw" }
 }
 
-resource "aws_route_table" "rhel_rt" {
-  vpc_id = aws_vpc.rhel_vpc.id
+resource "aws_route_table" "ubuntu_rt" {
+  vpc_id = aws_vpc.ubuntu_vpc.id
   route {
     cidr_block = "0.0.0.0/0"
-    gateway_id = aws_internet_gateway.rhel_igw.id
+    gateway_id = aws_internet_gateway.ubuntu_igw.id
   }
   tags = { Name = "${var.name_prefix}-rt" }
 }
 
-resource "aws_route_table_association" "rhel_rta" {
-  subnet_id      = aws_subnet.rhel_subnet.id
-  route_table_id = aws_route_table.rhel_rt.id
+resource "aws_route_table_association" "ubuntu_rta" {
+  subnet_id      = aws_subnet.ubuntu_subnet.id
+  route_table_id = aws_route_table.ubuntu_rt.id
 }
 
-resource "aws_security_group" "rhel_sg" {
+resource "aws_security_group" "ubuntu_sg" {
   name_prefix = "${var.name_prefix}-sg"
-  vpc_id      = aws_vpc.rhel_vpc.id
+  vpc_id      = aws_vpc.ubuntu_vpc.id
 
   ingress {
     from_port   = 22
@@ -98,7 +98,7 @@ resource "aws_security_group" "rhel_sg" {
     cidr_blocks = var.ssh_allowed_cidr
   }
 
-  # Allow HTTP for RHEL repo access within VPC
+  # Allow HTTP for Ubuntu repo access within VPC
   ingress {
     from_port   = 80
     to_port     = 80
@@ -124,7 +124,7 @@ resource "tls_private_key" "ssh_key" {
 
 locals {
   server_names = {
-    for k, v in var.server_instances : k => "aws-srv-rhel-${format("%02d", v.index)}"
+    for k, v in var.server_instances : k => "aws-srv-ubuntu-${format("%02d", v.index)}"
   }
 }
 
@@ -147,24 +147,22 @@ resource "local_file" "private_key" {
   }
 }
 
-# Create user data script for RHEL configuration
+# Create user data script for Ubuntu configuration
 locals {
-  rhel_user_data = base64encode(templatefile("${path.module}/rhel-userdata.sh", {
-    redhat_username  = var.redhat_username
-    redhat_password  = var.redhat_password
+  ubuntu_user_data = base64encode(templatefile("${path.module}/ubuntu-userdata.sh", {
     mirror_server_ip = var.mirror_server_ip
   }))
 }
 
-resource "aws_instance" "rhel_servers" {
+resource "aws_instance" "ubuntu_servers" {
   for_each = var.server_instances
 
-  ami                    = data.aws_ami.rhel[each.key].id
+  ami                    = data.aws_ami.ubuntu[each.key].id
   instance_type          = each.value.instance_type
-  subnet_id              = aws_subnet.rhel_subnet.id
-  vpc_security_group_ids = [aws_security_group.rhel_sg.id]
+  subnet_id              = aws_subnet.ubuntu_subnet.id
+  vpc_security_group_ids = [aws_security_group.ubuntu_sg.id]
   key_name               = aws_key_pair.server_key[each.key].key_name
-  user_data              = local.rhel_user_data
+  user_data              = local.ubuntu_user_data
 
   root_block_device {
     volume_type = "gp3"
@@ -176,8 +174,8 @@ resource "aws_instance" "rhel_servers" {
     {
       Name = local.server_names[each.key]
       Environment = "Development"
-      OS = "RHEL"
-      RHELVersion = each.value.rhel_version
+      OS = "Ubuntu"
+      OSVersion = "22.04"
     },
     each.value.additional_tags
   )

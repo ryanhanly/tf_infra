@@ -28,11 +28,15 @@ variable "ssh_allowed_cidr" {
   description = "CIDR blocks allowed for SSH access (restrict in production)"
 }
 
+variable "mirror_server_ip" {
+  type        = string
+  default     = ""
+  description = "IP address of the Ubuntu mirror server"
+}
+
 variable "server_instances" {
   type = map(object({
-    ami_id          = string
     instance_type   = string
-    os_type         = string
     index           = number
     additional_tags = map(string)
   }))
@@ -40,23 +44,17 @@ variable "server_instances" {
 
   default = {
     "server1" = {
-      ami_id          = "ami-044415bb13eee2391"  # Ubuntu AMI for eu-west-2
       instance_type   = "t2.micro"
-      os_type         = "ubuntu"
       index           = 1
       additional_tags = {}
     }
     "server2" = {
-      ami_id          = "ami-044415bb13eee2391"  # Ubuntu AMI for eu-west-2
       instance_type   = "t2.micro"
-      os_type         = "ubuntu"
       index           = 2
       additional_tags = { "Purpose" = "Testing" }
     }
     "server3" = {
-      ami_id          = "ami-044415bb13eee2391"  # Ubuntu AMI for eu-west-2
       instance_type   = "t2.micro"
-      os_type         = "ubuntu"
       index           = 3
       additional_tags = { "Purpose" = "Development" }
     }
