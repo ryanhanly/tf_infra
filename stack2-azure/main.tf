@@ -1,4 +1,4 @@
-# stack2-azure/main.tf (root module) - Updated for RHEL
+# stack2-azure/main.tf (root module) - Updated for Ubuntu
 
 provider "azurerm" {
   features {}
@@ -41,7 +41,7 @@ resource "azurerm_public_ip" "public_ip" {
   allocation_method   = "Static"
 }
 
-# Create a network security group with RHEL-specific rules
+# Create a network security group with Ubuntu-specific rules
 resource "azurerm_network_security_group" "nsg" {
   name                = "${var.infprefix}-nsg"
   location            = azurerm_resource_group.rg.location
@@ -60,7 +60,7 @@ resource "azurerm_network_security_group" "nsg" {
     destination_address_prefix = "*"
   }
 
-  # Allow HTTP for RHEL repo access
+  # Allow HTTP for Ubuntu repo access
   security_rule {
     name                       = "HTTP"
     priority                   = 1002
@@ -95,28 +95,25 @@ resource "azurerm_subnet_network_security_group_association" "example" {
   network_security_group_id = azurerm_network_security_group.nsg.id
 }
 
-module "rhel_vm" {
+module "ubuntu_vm" {
   source   = "./modules/azure_vm"
   for_each = var.virtual_machines
 
   resource_group_name  = azurerm_resource_group.rg.name
   location             = azurerm_resource_group.rg.location
-  vm_name              = "azr-srv-rhel-${format("%02d", each.value.index)}"
+  vm_name              = "azr-srv-ubuntu-${format("%02d", each.value.index)}"
   vm_size              = each.value.vm_size
   network_interface_id = azurerm_network_interface.nic[each.key].id
   admin_username       = each.value.admin_username
 
-  # RHEL-specific configuration
-  image_publisher = "RedHat"
-  image_offer     = "RHEL"
-  image_sku       = each.value.rhel_version
+  # Ubuntu configuration
+  image_publisher = "Canonical"
+  image_offer     = "0001-com-ubuntu-server-jammy"
+  image_sku       = "22_04-lts-gen2"
   image_version   = "latest"
 
-  # Red Hat subscription details
-  enable_rhel_registration = var.enable_rhel_registration
-  redhat_username         = var.redhat_username
-  redhat_password         = var.redhat_password
-  mirror_server_ip        = var.mirror_server_ip
+  # Mirror server configuration
+  mirror_server_ip = var.mirror_server_ip
 
   # Pass auto-shutdown variables to module
   enable_auto_shutdown                = var.enable_auto_shutdown
@@ -127,8 +124,8 @@ module "rhel_vm" {
   tags = merge(
     {
       Environment = var.environment
-      Project     = "RHELLearning"
-      OS          = "RHEL"
+      Project     = "UbuntuLearning"
+      OS          = "Ubuntu"
     },
     each.value.tags
   )

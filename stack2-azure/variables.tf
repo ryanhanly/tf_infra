@@ -1,27 +1,10 @@
+# stack2-azure/variable.tf
+
+
 variable "ssh_public_key_content" {
   description = "The content of the SSH public key"
   type        = string
   default     = ""  # Empty default, will be generated if not provided
-}
-
-variable "subscription_id" {
-  type        = string
-  description = "Azure subscription ID"
-}
-
-variable "client_id" {
-  type        = string
-  description = "Azure client ID"
-}
-
-variable "client_secret" {
-  type        = string
-  description = "Azure client secret"
-}
-
-variable "tenant_id" {
-  type        = string
-  description = "Azure tenant ID"
 }
 
 variable "location" {
@@ -32,7 +15,7 @@ variable "location" {
 
 variable "resource_group_name" {
   type        = string
-  default     = "azr-iac-rg"
+  default     = "azr-ubuntu-rg"
   description = "Name of the resource group"
 }
 
@@ -50,7 +33,7 @@ variable "infprefix" {
 
 variable "admin_username" {
   type        = string
-  default     = "azureadmin"
+  default     = "ubuntu"
   description = "Standard Admin Username"
 }
 
@@ -60,22 +43,28 @@ variable "environment" {
   description = "Define the operating environment"
 }
 
+variable "mirror_server_ip" {
+  description = "IP address of the Ubuntu mirror server"
+  type        = string
+  default     = ""
+}
+
 # Define the virtual_machines variable with index field
 variable "virtual_machines" {
   type = map(object({
     vm_size        = string
     admin_username = string
-    index          = number         # Add this field for VM numbering
+    index          = number
     tags           = map(string)
   }))
   description = "Map of virtual machines to create with their configurations"
   default = {
     "vm01" = {
       vm_size        = "Standard_B1s"
-      admin_username = "azureadmin"
+      admin_username = "ubuntu"
       index          = 1
       tags = {
-        Name = "vm_ubuntu_01"
+        Name = "ubuntu_vm_01"
       }
     }
   }

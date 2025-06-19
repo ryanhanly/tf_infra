@@ -1,0 +1,64 @@
+# modules/azure_vm/ubuntu-init.yml
+#cloud-config
+
+package_update: true
+package_upgrade: false  # Don't auto-upgrade on first boot
+
+packages:
+  - wget
+  - curl
+  - vim
+  - htop
+
+write_files:
+  - path: /etc/apt/sources.list.d/local-mirror.list
+    content: |
+      # Local Ubuntu mirror configuration
+      # Uncomment to use local mirror instead of archive.ubuntu.com
+      # deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy main restricted universe multiverse
+      # deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse
+      # deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
+      # deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy-backports main restricted universe multiverse
+
+  - path: /usr/local/bin/setup-ubuntu-mirror.sh
+    permissions: '0755'
+    content: |
+      #!/bin/bash
+      # Script to configure Ubuntu to use local mirror
+
+      echo "Configuring Ubuntu to use local repository mirror..."
+
+      # Test connectivity to mirror server
+      if curl -s http://${mirror_server_ip} > /dev/null; then
+          echo "Mirror server is accessible at ${mirror_server_ip}"
+
+          # Backup original sources.list
+          cp /etc/apt/sources.list /etc/apt/sources.list.backup
+
+          # Create new sources.list with local mirror
+          cat > /etc/apt/sources.list << EOF
+# Local Ubuntu Mirror
+deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy main restricted universe multiverse
+deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse
+deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
+deb http://${mirror_server_ip}/ubuntu/archive.ubuntu.com/ubuntu jammy-backports main restricted universe multiverse
+
+# Fallback to official repos (commented out)
+# deb http://archive.ubuntu.com/ubuntu jammy main restricted universe multiverse
+# deb http://archive.ubuntu.com/ubuntu jammy-updates main restricted universe multiverse
+# deb http://security.ubuntu.com/ubuntu jammy-security main restricted universe multiverse
+# deb http://archive.ubuntu.com/ubuntu jammy-backports main restricted universe multiverse
+EOF
+
+          # Update package lists
+          apt update
+
+          echo "Local mirror configuration completed"
+      else
+          echo "Mirror server not accessible. Using default repositories."
+      fi
+
+runcmd:
+  - /usr/local/bin/setup-ubuntu-mirror.sh
+
+final_message: "Ubuntu VM setup completed. Local mirror configured if available."

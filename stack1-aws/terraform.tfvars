@@ -1,6 +1,6 @@
 # stack1-aws/terraform.tfvars
 # Mirror server IP (set this after deploying stack4)
-mirror_server_ip = "172.166.188.125"  # Update with actual mirror server IP
+mirror_server_ip = "172.166.188.125"  # asr-srv-ubuntu-01 (Mirror Server in Azure)
 
 # Ubuntu server configuration
 server_instances = {
