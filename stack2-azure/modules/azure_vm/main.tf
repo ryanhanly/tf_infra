@@ -35,6 +35,11 @@ resource "azurerm_linux_virtual_machine" "vm" {
     version   = var.image_version
   }
 
+  # Configure patch orchestration for Azure Update Manager
+  patch_assessment_mode = "AutomaticByPlatform"
+  patch_mode           = "AutomaticByPlatform"
+  bypass_platform_safety_checks_on_user_schedule_enabled = true
+
   # Basic cloud-init for Ubuntu setup
   custom_data = var.mirror_server_ip != "" ? base64encode(templatefile("${path.module}/ubuntu-init.yml", {
     mirror_server_ip = var.mirror_server_ip

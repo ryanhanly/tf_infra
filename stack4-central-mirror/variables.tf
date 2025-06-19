@@ -133,3 +133,63 @@ variable "tags" {
   }
   description = "Tags to apply to resources"
 }
+
+# Azure Update Manager variables for Mirror Server
+variable "maintenance_start_datetime" {
+  type        = string
+  default     = "2025-07-01 01:00"  # 1 AM - earlier than test VMs
+  description = "Start date and time for maintenance window (YYYY-MM-DD HH:MM format)"
+}
+
+variable "maintenance_expiration_datetime" {
+  type        = string
+  default     = "2026-07-01 01:00"
+  description = "Expiration date and time for maintenance window (YYYY-MM-DD HH:MM format)"
+}
+
+variable "maintenance_duration" {
+  type        = string
+  default     = "02:00"  # Shorter window for mirror server
+  description = "Duration of maintenance window (HH:MM format)"
+}
+
+variable "maintenance_timezone" {
+  type        = string
+  default     = "UTC"
+  description = "Time zone for maintenance window"
+}
+
+variable "maintenance_recurrence" {
+  type        = string
+  default     = "Month First Sunday"  # Different day from test VMs
+  description = "Recurrence pattern (e.g., 'Month First Sunday', 'Week', '1Day')"
+}
+
+variable "linux_classifications_to_include" {
+  type        = list(string)
+  default     = ["Critical", "Security"]
+  description = "Linux update classifications to include"
+}
+
+variable "linux_packages_to_include" {
+  type        = list(string)
+  default     = []
+  description = "Linux package names to include (empty for all)"
+}
+
+variable "linux_packages_to_exclude" {
+  type        = list(string)
+  default     = ["nginx*"]  # Exclude nginx to avoid service disruption
+  description = "Linux package names to exclude"
+}
+
+variable "reboot_setting" {
+  type        = string
+  default     = "IfRequired"
+  description = "Reboot setting (Never, Always, IfRequired)"
+
+  validation {
+    condition     = contains(["Never", "Always", "IfRequired"], var.reboot_setting)
+    error_message = "Reboot setting must be one of: Never, Always, IfRequired."
+  }
+}

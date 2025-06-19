@@ -116,7 +116,7 @@ resource "azurerm_network_security_group" "mirror_nsg" {
   }
 
   security_rule {
-    name                       = "HTTP_Ubuntu_Repos_Azure"
+    name                       = "HTTP_Ubuntu_Repos"
     priority                   = 1002
     direction                  = "Inbound"
     access                     = "Allow"
@@ -161,7 +161,7 @@ resource "tls_private_key" "mirror_ssh_key" {
 # Save private key locally
 resource "local_file" "mirror_private_key" {
   content         = tls_private_key.mirror_ssh_key.private_key_pem
-  filename        = "${path.module}/ssh_keys/azr-srv-ubuntu-01.pem"
+  filename        = "${path.module}/ssh_keys/azr-srv-mirror-01.pem"
   file_permission = "0600"
 
   provisioner "local-exec" {
@@ -171,7 +171,7 @@ resource "local_file" "mirror_private_key" {
 
 # Ubuntu Virtual Machine
 resource "azurerm_linux_virtual_machine" "mirror_vm" {
-  name                = "azr-srv-ubuntu-01"
+  name                = "azr-srv-mirror-01"
   resource_group_name = azurerm_resource_group.mirror_rg.name
   location            = azurerm_resource_group.mirror_rg.location
   size                = var.vm_size
@@ -201,6 +201,11 @@ resource "azurerm_linux_virtual_machine" "mirror_vm" {
     sku       = "22_04-lts-gen2"
     version   = "latest"
   }
+
+  # Configure patch orchestration for Azure Update Manager
+  patch_assessment_mode = "AutomaticByPlatform"
+  patch_mode           = "AutomaticByPlatform"
+  bypass_platform_safety_checks_on_user_schedule_enabled = true
 
   # Ubuntu cloud-init
   custom_data = base64encode(templatefile("${path.module}/cloud-init.yml", {

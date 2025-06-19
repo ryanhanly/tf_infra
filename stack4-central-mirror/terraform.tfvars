@@ -21,3 +21,18 @@ auto_shutdown_time   = "1800"  # 6 PM
 
 # Email for shutdown notifications (optional)
 auto_shutdown_notification_email = "ryanhanly@gmail.com"
+
+# Azure Update Manager settings for Mirror Server
+maintenance_start_datetime     = "2025-07-15 01:00"  # 1 AM - before test VMs
+maintenance_expiration_datetime = "2026-07-15 01:00"  # Valid for 1 year
+maintenance_duration          = "02:00"              # 2 hour window (shorter)
+maintenance_timezone          = "GMT Standard Time"
+maintenance_recurrence        = "Month First Sunday" # Different day from test VMs
+
+# Update classifications (more conservative for mirror server)
+linux_classifications_to_include = ["Critical", "Security"]
+linux_packages_to_include       = []  # Empty means all packages
+linux_packages_to_exclude       = ["nginx*", "apache2*"]  # Protect web services
+
+# Reboot behavior
+reboot_setting = "IfRequired"  # Reboot only if required

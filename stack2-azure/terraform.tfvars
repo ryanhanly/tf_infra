@@ -34,3 +34,18 @@ environment        = "development"
 # Cost optimization
 enable_auto_shutdown = true
 auto_shutdown_time   = "1800"
+
+# Azure Update Manager settings
+maintenance_start_datetime     = "2025-07-15 22:00"  # Start patches at 10 PM
+maintenance_expiration_datetime = "2026-07-15 22:00"  # Valid for 1 year
+maintenance_duration          = "03:00"              # 3 hour window
+maintenance_timezone          = "GMT Standard Time"
+maintenance_recurrence        = "Month Second Tuesday"  # Monthly patching on 2nd Tuesday
+
+# Update classifications
+linux_classifications_to_include = ["Critical", "Security"]
+linux_packages_to_include       = []  # Empty means all packages
+linux_packages_to_exclude       = ["kernel*"]  # Example: exclude kernel updates
+
+# Reboot behavior
+reboot_setting = "IfRequired"  # Reboot only if required by updates

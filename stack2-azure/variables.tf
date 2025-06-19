@@ -93,3 +93,66 @@ variable "auto_shutdown_notification_email" {
   default     = ""
   description = "Email for shutdown notifications (optional)"
 }
+
+# Add these variables to your existing stack2-azure/variables.tf file
+# (append to the bottom)
+
+# Azure Update Manager variables
+variable "maintenance_start_datetime" {
+  type        = string
+  default     = "2025-07-01 02:00"
+  description = "Start date and time for maintenance window (YYYY-MM-DD HH:MM format)"
+}
+
+variable "maintenance_expiration_datetime" {
+  type        = string
+  default     = "2026-07-01 02:00"
+  description = "Expiration date and time for maintenance window (YYYY-MM-DD HH:MM format)"
+}
+
+variable "maintenance_duration" {
+  type        = string
+  default     = "03:00"
+  description = "Duration of maintenance window (HH:MM format)"
+}
+
+variable "maintenance_timezone" {
+  type        = string
+  default     = "UTC"
+  description = "Time zone for maintenance window"
+}
+
+variable "maintenance_recurrence" {
+  type        = string
+  default     = "Month Second Tuesday"
+  description = "Recurrence pattern (e.g., 'Month Second Tuesday', 'Week', '1Day')"
+}
+
+variable "linux_classifications_to_include" {
+  type        = list(string)
+  default     = ["Critical", "Security"]
+  description = "Linux update classifications to include"
+}
+
+variable "linux_packages_to_include" {
+  type        = list(string)
+  default     = []
+  description = "Linux package names to include (empty for all)"
+}
+
+variable "linux_packages_to_exclude" {
+  type        = list(string)
+  default     = []
+  description = "Linux package names to exclude"
+}
+
+variable "reboot_setting" {
+  type        = string
+  default     = "IfRequired"
+  description = "Reboot setting (Never, Always, IfRequired)"
+
+  validation {
+    condition     = contains(["Never", "Always", "IfRequired"], var.reboot_setting)
+    error_message = "Reboot setting must be one of: Never, Always, IfRequired."
+  }
+}
