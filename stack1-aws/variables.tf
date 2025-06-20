@@ -60,3 +60,37 @@ variable "server_instances" {
     }
   }
 }
+
+# Azure Arc variables
+variable "azure_subscription_id" {
+  type        = string
+  description = "Azure subscription ID for Arc registration"
+}
+
+variable "azure_tenant_id" {
+  type        = string
+  description = "Azure tenant ID"
+}
+
+variable "arc_client_id" {
+  type        = string
+  description = "Service principal client ID for Arc"
+}
+
+variable "arc_client_secret" {
+  type        = string
+  description = "Service principal client secret for Arc"
+  sensitive   = true
+}
+
+variable "arc_resource_group" {
+  type        = string
+  default     = "rg-arc-aws-servers"
+  description = "Azure resource group for Arc-enabled servers"
+}
+
+variable "azure_region" {
+  type        = string
+  default     = "UK South"
+  description = "Azure region for Arc resources"
+}

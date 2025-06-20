@@ -157,12 +157,13 @@ locals {
 resource "aws_instance" "ubuntu_servers" {
   for_each = var.server_instances
 
-  ami                    = data.aws_ami.ubuntu[each.key].id
-  instance_type          = each.value.instance_type
-  subnet_id              = aws_subnet.ubuntu_subnet.id
-  vpc_security_group_ids = [aws_security_group.ubuntu_sg.id]
-  key_name               = aws_key_pair.server_key[each.key].key_name
-  user_data              = local.ubuntu_user_data
+  ami                         = data.aws_ami.ubuntu[each.key].id
+  instance_type               = each.value.instance_type
+  subnet_id                   = aws_subnet.ubuntu_subnet.id
+  vpc_security_group_ids      = [aws_security_group.ubuntu_sg.id]
+  key_name                    = aws_key_pair.server_key[each.key].key_name
+  user_data                   = local.ubuntu_user_data
+  associate_public_ip_address = true
 
   root_block_device {
     volume_type = "gp3"
@@ -179,4 +180,22 @@ resource "aws_instance" "ubuntu_servers" {
     },
     each.value.additional_tags
   )
+}
+
+# Create Elastic IPs for each server
+resource "aws_eip" "server_eips" {
+  for_each = aws_instance.ubuntu_servers
+
+  instance = each.value.id
+  domain   = "vpc"
+
+  tags = merge(
+    {
+      Name = "${local.server_names[each.key]}-eip"
+      Environment = "Development"
+    },
+    each.value.tags
+  )
+
+  depends_on = [aws_internet_gateway.ubuntu_igw]
 }

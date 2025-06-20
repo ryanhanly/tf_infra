@@ -34,3 +34,10 @@ subnet_cidr = "10.0.1.0/24"
 
 # Security - open for lab (restrict in production)
 ssh_allowed_cidr = ["0.0.0.0/0"]
+
+# Azure Arc configuration
+azure_subscription_id = "810ef0ef-448f-48b1-88b9-1f3f0f26a320"
+azure_tenant_id      = "479bd166-4e88-4b05-8091-599ef34318e0"
+arc_client_id         = "41f45bbc-3c67-40f1-8462-51d391eb100c"
+arc_client_secret     = "3ou8Q~4JR7rnySWJ.GL3xsr8QW_s5rpdkMLryaRQ%"
+arc_resource_group    = "rg-arc-aws-servers"

@@ -11,6 +11,9 @@ ssh short names
 mirror-server
 ubuntu-vm01
 ubuntu-vm02
+aws-vm01
+aws-vm02
+aws-vm03
 
 Azure outputs
 Outputs:
@@ -38,21 +41,46 @@ vm_public_ips = {
   "ubuntu-vm02" = "51.140.122.228"
 }
 
-#####
+##### Stack1-aws
 
-AWS stack outputs
+Outputs:
+
+debug_instance_details = {
+  "ubuntu-server1" = {
+    "instance_id" = "i-0cc27d9245db9c2a5"
+    "private_ip" = "10.0.1.10"
+    "public_dns" = "ec2-3-8-78-128.eu-west-2.compute.amazonaws.com"
+    "public_ip" = "3.8.78.128"
+    "state" = "running"
+  }
+  "ubuntu-server2" = {
+    "instance_id" = "i-0e32269c258e57da8"
+    "private_ip" = "10.0.1.246"
+    "public_dns" = "ec2-18-171-57-13.eu-west-2.compute.amazonaws.com"
+    "public_ip" = "18.171.57.13"
+    "state" = "running"
+  }
+  "ubuntu-server3" = {
+    "instance_id" = "i-03fd5a884d2b006d9"
+    "private_ip" = "10.0.1.195"
+    "public_dns" = "ec2-13-40-5-161.eu-west-2.compute.amazonaws.com"
+    "public_ip" = "13.40.5.161"
+    "state" = "running"
+  }
+}
 server_ids = {
-  "aws-srv-ubuntu-01" = "i-0a44375b80e25e7b2"
-  "aws-srv-ubuntu-02" = "i-040bd5f4eb4229374"
-  "aws-srv-ubuntu-03" = "i-0d7f3b05ccaee1675"
+  "aws-srv-ubuntu-01" = "i-0cc27d9245db9c2a5"
+  "aws-srv-ubuntu-02" = "i-0e32269c258e57da8"
+  "aws-srv-ubuntu-03" = "i-03fd5a884d2b006d9"
 }
 server_public_ips = {
-  "aws-srv-ubuntu-01" = "18.171.183.85"
-  "aws-srv-ubuntu-02" = "18.170.51.58"
-  "aws-srv-ubuntu-03" = "18.175.236.2"
+  "aws-srv-ubuntu-01" = "3.8.78.128"
+  "aws-srv-ubuntu-02" = "18.171.57.13"
+  "aws-srv-ubuntu-03" = "13.40.5.161"
 }
 subnet_id = "subnet-01d1812360b3b058f"
 vpc_id = "vpc-0d0ec1fb5ccba6713"
+
 
 #####
 stack4 outputs
@@ -72,3 +100,21 @@ update_manager_summary = {
   "reboot_setting" = "IfRequired"
   "recurrence" = "Month First Sunday"
 }
+
+
+
+### stack5
+
+arc_client_id = "41f45bbc-3c67-40f1-8462-51d391eb100c"
+arc_client_secret = <sensitive>
+arc_resource_group_name = "rg-arc-aws-servers"
+arc_setup_summary = {
+  "app_name" = "arc-aws-servers-sp"
+  "location" = "uksouth"
+  "resource_group" = "rg-arc-aws-servers"
+  "sp_client_id" = "41f45bbc-3c67-40f1-8462-51d391eb100c"
+}
+arc_sp_object_id = "41f45bbc-3c67-40f1-8462-51d391eb100c"
+ryanhanly@Ryans-MacBook-Pro stack5-arc-prereqs % terraform output -raw arc_client_secret
+3ou8Q~4JR7rnySWJ.GL3xsr8QW_s5rpdkMLryaRQ%
+ryanhanly@Ryans-MacBook-Pro stack5-arc-prereqs %

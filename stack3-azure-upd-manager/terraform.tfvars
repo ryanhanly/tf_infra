@@ -37,3 +37,10 @@ tags = {
   Department   = "IT Operations"
   CostCenter   = "IT-123"
 }
+
+arc_server_names = [
+  "i-0cc27d9245db9c2a5",
+  "i-0e32269c258e57da8",
+  "i-03fd5a884d2b006d9"
+]
+arc_resource_group_name = "rg-arc-aws-servers"

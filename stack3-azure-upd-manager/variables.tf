@@ -126,3 +126,15 @@ variable "tags" {
   }
   description = "Tags to apply to resources"
 }
+
+variable "arc_server_names" {
+  type        = list(string)
+  default     = []
+  description = "List of Arc-enabled server names to include in Update Manager"
+}
+
+variable "arc_resource_group_name" {
+  type        = string
+  default     = "rg-arc-aws-servers"
+  description = "Resource group containing Arc-enabled servers"
+}
