@@ -8,7 +8,7 @@ tenant_id       = "479bd166-4e88-4b05-8091-599ef34318e0"  # Example ID, replace 
 
 # Resource names and location
 location                    = "UK South"
-resource_group_name         = "rg-update-management"
+resource_group_name         = "rg-arc-aws-servers"
 
 # Maintenance configuration
 maintenance_config_name = "monthly-updates"
@@ -16,7 +16,7 @@ maintenance_start_date  = "2025-05-15"
 maintenance_start_time  = "22:00"
 maintenance_duration    = "03:00"
 maintenance_timezone    = "UTC"
-maintenance_recurrence  = "1Month"
+maintenance_recurrence  = "Month Second Tuesday"
 
 # Update settings
 linux_classifications_to_include = ["Critical", "Security"]

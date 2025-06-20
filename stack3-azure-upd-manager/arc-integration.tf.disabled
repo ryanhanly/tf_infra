@@ -1,0 +1,45 @@
+# stack3-azure-upd-manager/arc-integration.tf
+# Add Arc-enabled AWS servers to Azure Update Manager using AzAPI
+
+# Data source to find Arc-enabled servers
+data "azurerm_arc_machine" "aws_servers" {
+  count               = length(var.arc_server_names)
+  name                = var.arc_server_names[count.index]
+  resource_group_name = var.arc_resource_group_name
+}
+
+# Assign Arc servers to the existing maintenance configuration using AzAPI
+resource "azapi_resource" "arc_maintenance_assignments" {
+  count = length(data.azurerm_arc_machine.aws_servers)
+
+  type      = "Microsoft.Maintenance/configurationAssignments@2023-04-01"
+  name      = "assign-${var.arc_server_names[count.index]}"
+  parent_id = data.azurerm_arc_machine.aws_servers[count.index].id
+
+  body = {
+    properties = {
+      maintenanceConfigurationId = azurerm_maintenance_configuration.update_schedule.id
+    }
+  }
+}
+
+# Get current client config for subscription ID
+data "azurerm_client_config" "current" {}
+
+# Output Arc assignments
+output "arc_server_assignments" {
+  description = "Arc servers assigned to Update Manager"
+  value = {
+    for i, assignment in azapi_resource.arc_maintenance_assignments :
+    var.arc_server_names[i] => assignment.id
+  }
+}
+
+output "arc_update_summary" {
+  description = "Summary of Arc servers in Update Manager"
+  value = {
+    total_arc_servers    = length(var.arc_server_names)
+    maintenance_schedule = "${var.maintenance_start_date} ${var.maintenance_start_time} (${var.maintenance_timezone})"
+    arc_server_names    = var.arc_server_names
+  }
+}

@@ -1,5 +1,17 @@
 # stack3-azure-upd-manager/main.tf
 # Updated version for Azure Update Manager without OMS dependencies
+terraform {
+  required_providers {
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
+    azapi = {
+      source  = "azure/azapi"
+      version = "~> 1.0"
+    }
+  }
+}
 
 provider "azurerm" {
   features {}
@@ -12,17 +24,15 @@ provider "azurerm" {
 }
 
 # Resource Group for Update Management
-resource "azurerm_resource_group" "update_mgmt_rg" {
-  name     = var.resource_group_name
-  location = var.location
-  tags     = var.tags
+data "azurerm_resource_group" "update_mgmt_rg" {
+  name = var.resource_group_name
 }
 
 # Create maintenance configuration for patching (modern approach)
 resource "azurerm_maintenance_configuration" "update_schedule" {
   name                     = var.maintenance_config_name
-  resource_group_name      = azurerm_resource_group.update_mgmt_rg.name
-  location                 = azurerm_resource_group.update_mgmt_rg.location
+  resource_group_name      = data.azurerm_resource_group.update_mgmt_rg.name
+  location                 = data.azurerm_resource_group.update_mgmt_rg.location
   scope                    = "InGuestPatch"
   in_guest_user_patch_mode = "User"
   visibility               = "Custom"
@@ -59,7 +69,7 @@ resource "azurerm_maintenance_configuration" "update_schedule" {
 # Output resource info
 output "resource_group_name" {
   description = "The name of the resource group"
-  value       = azurerm_resource_group.update_mgmt_rg.name
+  value       = data.azurerm_resource_group.update_mgmt_rg.name
 }
 
 output "maintenance_configuration_id" {

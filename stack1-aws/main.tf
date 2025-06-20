@@ -12,6 +12,10 @@ terraform {
       source = "hashicorp/aws"
       version = "~> 5.0"
     }
+    azurerm = {
+      source  = "hashicorp/azurerm"
+      version = "~> 4.0"
+    }
     tls = {
       source = "hashicorp/tls"
       version = "~> 4.0"
@@ -47,6 +51,15 @@ data "aws_ami" "ubuntu" {
     name   = "virtualization-type"
     values = ["hvm"]
   }
+}
+
+# Azure provider for Arc extensions
+provider "azurerm" {
+  features {}
+  subscription_id = var.azure_subscription_id
+  client_id       = var.arc_client_id
+  client_secret   = var.arc_client_secret
+  tenant_id       = var.azure_tenant_id
 }
 
 resource "aws_vpc" "ubuntu_vpc" {
