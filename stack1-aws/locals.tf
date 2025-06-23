@@ -3,11 +3,7 @@
 
 locals {
   # Environment abbreviation mapping
-  environment_abbrev = {
-    "Development" = "Dev"
-    "Test"        = "Test"
-    "Production"  = "Prod"
-  }
+  environment_abbrev = module.shared_values.environment_abbreviations
 
   # Generate server names (existing logic)
   server_names = {

@@ -1,6 +1,12 @@
 # stack1-aws/variables.tf
 # Variable definitions only - no defaults for required values
 
+# Reference shared values
+module "shared_values" {
+  source = "../shared"
+}
+
+
 variable "aws_region" {
   type        = string
   description = "AWS Region for deploying resources"
@@ -41,6 +47,22 @@ variable "server_instances" {
     additional_tags = map(string)
   }))
   description = "Map of servers to create with their configurations"
+
+  validation {
+    condition = alltrue([
+      for server in values(var.server_instances) :
+      contains(module.shared_values.allowed_business_units, server.bu)
+    ])
+    error_message = "Business unit must be one of: ${join(", ", module.shared_values.allowed_business_units)}."
+  }
+
+  validation {
+    condition = alltrue([
+      for server in values(var.server_instances) :
+      contains(module.shared_values.allowed_environments, server.environment)
+    ])
+    error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
+  }
 }
 
 # Azure Arc variables

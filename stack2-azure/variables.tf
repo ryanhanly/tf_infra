@@ -1,6 +1,35 @@
 # stack2-azure/variables.tf
 # Variable definitions only - no defaults for required values
 
+# Reference shared values
+module "shared_values" {
+  source = "../shared"
+}
+
+
+# Azure Authentication
+variable "subscription_id" {
+  type        = string
+  description = "Azure subscription ID"
+}
+
+variable "client_id" {
+  type        = string
+  description = "Azure client ID"
+}
+
+variable "client_secret" {
+  type        = string
+  description = "Azure client secret"
+  sensitive   = true
+}
+
+variable "tenant_id" {
+  type        = string
+  description = "Azure tenant ID"
+}
+
+
 variable "location" {
   type        = string
   description = "Azure Region for deploying resources"
@@ -45,6 +74,21 @@ variable "virtual_machines" {
     tags           = map(string)
   }))
   description = "Map of virtual machines to create with their configurations"
+  validation {
+    condition = alltrue([
+      for vm in values(var.virtual_machines) :
+      contains(module.shared_values.allowed_business_units, vm.business_unit)
+    ])
+    error_message = "Business unit must be one of: ${join(", ", module.shared_values.allowed_business_units)}."
+  }
+
+  validation {
+    condition = alltrue([
+      for vm in values(var.virtual_machines) :
+      contains(module.shared_values.allowed_environments, vm.environment)
+    ])
+    error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
+  }
 }
 
 # Cost optimization
@@ -120,4 +164,21 @@ variable "reboot_setting" {
     condition     = contains(["Never", "Always", "IfRequired"], var.reboot_setting)
     error_message = "Reboot setting must be one of: Never, Always, IfRequired."
   }
+}
+
+# Required Tagging Variables
+variable "business_unit" {
+  type        = string
+  description = "Business Unit (e.g., SC, MSH, TMS)"
+
+  validation {
+    condition     = contains(["SC", "MSH", "TMS"], var.business_unit)
+    error_message = "Business unit must be one of: SC, MSH, TMS."
+  }
+}
+
+variable "patch_group" {
+  type        = string
+  description = "Patch group for update management (auto-generated from BU and Environment)"
+  default     = ""
 }

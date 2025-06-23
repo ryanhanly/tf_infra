@@ -1,21 +1,13 @@
-# stack2-azure/main.tf (root module) - Updated for Ubuntu
-
-# provider "azurerm" {
-#   features {}
-#   subscription_id = "810ef0ef-448f-48b1-88b9-1f3f0f26a320"
-#   client_id       = "41f45bbc-3c67-40f1-8462-51d391eb100c"
-#   client_secret   = "3ou8Q~4JR7rnySWJ.GL3xsr8QW_s5rpdkMLryaRQ"
-#   tenant_id       = "479bd166-4e88-4b05-8091-599ef34318e0"
-# }
+# stack2-azure/main.tf (root module)
 
 provider "azurerm" {
   features {}
-  use_cli = false  # Force it to use explicit credentials only
-  subscription_id = "810ef0ef-448f-48b1-88b9-1f3f0f26a320"
-  client_id       = "41f45bbc-3c67-40f1-8462-51d391eb100c"
-  client_secret   = "3ou8Q~4JR7rnySWJ.GL3xsr8QW_s5rpdkMLryaRQ"
-  tenant_id       = "479bd166-4e88-4b05-8091-599ef34318e0"
+  subscription_id = var.subscription_id
+  client_id       = var.client_id
+  client_secret   = var.client_secret
+  tenant_id       = var.tenant_id
 }
+
 
 # Create a resource group
 resource "azurerm_resource_group" "rg" {
@@ -129,11 +121,10 @@ module "ubuntu_vm" {
   auto_shutdown_notification_email = var.auto_shutdown_notification_email
 
   tags = merge(
+    local.mandatory_tags,
+    each.value.tags,
     {
-      Environment = var.environment
-      Project     = "UbuntuLearning"
-      OS          = "Ubuntu"
-    },
-    each.value.tags
+      Name = "azr-srv-ubuntu-${format("%02d", each.value.index)}"
+    }
   )
 }

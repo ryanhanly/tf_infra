@@ -1,5 +1,10 @@
 # stack4-central-mirror/variables.tf
 
+# Reference shared values
+module "shared_values" {
+  source = "../shared"
+}
+
 variable "subscription_id" {
   type        = string
   description = "Azure subscription ID"
@@ -51,11 +56,6 @@ variable "admin_username" {
   description = "Admin username for the Ubuntu VM"
 }
 
-variable "environment" {
-  type        = string
-  default     = "lab"
-  description = "Environment designation"
-}
 
 variable "retention_days" {
   type        = number
@@ -121,17 +121,37 @@ variable "data_disk_size_gb" {
   }
 }
 
+variable "business_unit" {
+  type        = string
+  default     = "MSH"
+  description = "Business Unit (e.g., SC, MSH, TMS)"
+
+  validation {
+    condition     = contains(module.shared_values.allowed_business_units, var.business_unit)
+    error_message = "Business unit must be one of: ${join(", ", module.shared_values.allowed_business_units)}."
+  }
+}
+
+variable "environment" {
+  type        = string
+  default     = "Production"  # Infrastructure is always production
+  description = "Environment (Development, Test, Production)"
+
+  validation {
+    condition     = contains(module.shared_values.allowed_environments, var.environment)
+    error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
+  }
+}
+
 variable "tags" {
   type = map(string)
   default = {
-    Environment  = "Lab"
     Service      = "UbuntuMirror"
     Purpose      = "UbuntuRepositoryMirror"
     CostCenter   = "Learning"
     AutoShutdown = "Enabled"
-    OS           = "Ubuntu"
   }
-  description = "Tags to apply to resources"
+  description = "Additional tags to apply to resources"
 }
 
 # Azure Update Manager variables for Mirror Server
