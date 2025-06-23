@@ -48,7 +48,7 @@ resource "azurerm_storage_account" "repo_storage" {
   resource_group_name      = azurerm_resource_group.mirror_rg.name
   location                 = azurerm_resource_group.mirror_rg.location
   account_tier             = "Standard"
-  account_replication_type = "LRS"  # Cheaper for lab use
+  account_replication_type = "LRS" # Cheaper for lab use
 
   public_network_access_enabled = true
 
@@ -203,8 +203,8 @@ resource "azurerm_linux_virtual_machine" "mirror_vm" {
   }
 
   # Configure patch orchestration for Azure Update Manager
-  patch_assessment_mode = "AutomaticByPlatform"
-  patch_mode           = "AutomaticByPlatform"
+  patch_assessment_mode                                  = "AutomaticByPlatform"
+  patch_mode                                             = "AutomaticByPlatform"
   bypass_platform_safety_checks_on_user_schedule_enabled = true
 
   # Ubuntu cloud-init
@@ -219,7 +219,7 @@ resource "azurerm_linux_virtual_machine" "mirror_vm" {
   }
 
   tags = merge(var.tags, {
-    OS = "Ubuntu"
+    OS        = "Ubuntu"
     OSVersion = "22.04"
   })
 }

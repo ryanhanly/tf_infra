@@ -1,16 +1,17 @@
-#All below are good practice
+# Terraform
 *.tfstate
 *.tfstate.backup
 .terraform/
-# terraform.tfvars
+.terraform.lock.hcl
+terraform.tfvars
 *.log
-*/.terraform.lock.hcl
 
-# Private key files
+# Private keys and secrets
 *.pem
 *_key.pem
 ssh_keys/
 **/ssh_keys/
+arc-sp-output.json
 
 # Other sensitive files
 *.key

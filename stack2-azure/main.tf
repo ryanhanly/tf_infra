@@ -1,13 +1,20 @@
 # stack2-azure/main.tf (root module) - Updated for Ubuntu
 
+# provider "azurerm" {
+#   features {}
+#   subscription_id = "810ef0ef-448f-48b1-88b9-1f3f0f26a320"
+#   client_id       = "41f45bbc-3c67-40f1-8462-51d391eb100c"
+#   client_secret   = "3ou8Q~4JR7rnySWJ.GL3xsr8QW_s5rpdkMLryaRQ"
+#   tenant_id       = "479bd166-4e88-4b05-8091-599ef34318e0"
+# }
+
 provider "azurerm" {
   features {}
-
-  # Uncomment and use these if needed for authentication
-  # subscription_id = var.subscription_id
-  # client_id       = var.client_id
-  # client_secret   = var.client_secret
-  # tenant_id       = var.tenant_id
+  use_cli = false  # Force it to use explicit credentials only
+  subscription_id = "810ef0ef-448f-48b1-88b9-1f3f0f26a320"
+  client_id       = "41f45bbc-3c67-40f1-8462-51d391eb100c"
+  client_secret   = "3ou8Q~4JR7rnySWJ.GL3xsr8QW_s5rpdkMLryaRQ"
+  tenant_id       = "479bd166-4e88-4b05-8091-599ef34318e0"
 }
 
 # Create a resource group
@@ -56,7 +63,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "22"
-    source_address_prefix      = "*"  # In production, limit this to your IP
+    source_address_prefix      = "*" # In production, limit this to your IP
     destination_address_prefix = "*"
   }
 
@@ -69,7 +76,7 @@ resource "azurerm_network_security_group" "nsg" {
     protocol                   = "Tcp"
     source_port_range          = "*"
     destination_port_range     = "80"
-    source_address_prefix      = "10.0.0.0/16"  # Only from local VNet
+    source_address_prefix      = "10.0.0.0/16" # Only from local VNet
     destination_address_prefix = "*"
   }
 }
@@ -116,10 +123,10 @@ module "ubuntu_vm" {
   mirror_server_ip = var.mirror_server_ip
 
   # Pass auto-shutdown variables to module
-  enable_auto_shutdown                = var.enable_auto_shutdown
-  auto_shutdown_time                  = var.auto_shutdown_time
-  auto_shutdown_timezone              = var.auto_shutdown_timezone
-  auto_shutdown_notification_email    = var.auto_shutdown_notification_email
+  enable_auto_shutdown             = var.enable_auto_shutdown
+  auto_shutdown_time               = var.auto_shutdown_time
+  auto_shutdown_timezone           = var.auto_shutdown_timezone
+  auto_shutdown_notification_email = var.auto_shutdown_notification_email
 
   tags = merge(
     {

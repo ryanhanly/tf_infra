@@ -50,8 +50,8 @@ output "update_manager_summary" {
   description = "Summary of Update Manager configuration for mirror"
   value = {
     maintenance_schedule = "${var.maintenance_start_datetime} (${var.maintenance_timezone})"
-    duration            = var.maintenance_duration
-    recurrence          = var.maintenance_recurrence
-    reboot_setting      = var.reboot_setting
+    duration             = var.maintenance_duration
+    recurrence           = var.maintenance_recurrence
+    reboot_setting       = var.reboot_setting
   }
 }

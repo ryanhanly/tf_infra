@@ -40,8 +40,8 @@ variable "arc_sp_name" {
 }
 
 variable "tags" {
-  type        = map(string)
-  default     = {
+  type = map(string)
+  default = {
     Environment = "Lab"
     Service     = "AzureArc"
     Purpose     = "AWSServerManagement"

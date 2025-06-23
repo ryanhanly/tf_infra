@@ -20,9 +20,9 @@ resource "azurerm_maintenance_configuration" "mirror_updates" {
 
   install_patches {
     linux {
-      classifications_to_include     = var.linux_classifications_to_include
-      package_names_mask_to_include  = var.linux_packages_to_include
-      package_names_mask_to_exclude  = var.linux_packages_to_exclude
+      classifications_to_include    = var.linux_classifications_to_include
+      package_names_mask_to_include = var.linux_packages_to_include
+      package_names_mask_to_exclude = var.linux_packages_to_exclude
     }
 
     reboot = var.reboot_setting
@@ -38,5 +38,5 @@ resource "azurerm_maintenance_configuration" "mirror_updates" {
 resource "azurerm_maintenance_assignment_virtual_machine" "mirror_vm_assignment" {
   location                     = azurerm_resource_group.mirror_rg.location
   maintenance_configuration_id = azurerm_maintenance_configuration.mirror_updates.id
-  virtual_machine_id          = azurerm_linux_virtual_machine.mirror_vm.id
+  virtual_machine_id           = azurerm_linux_virtual_machine.mirror_vm.id
 }

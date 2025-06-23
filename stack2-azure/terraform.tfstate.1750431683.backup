@@ -1,0 +1,1109 @@
+{
+  "version": 4,
+  "terraform_version": "1.11.4",
+  "serial": 104,
+  "lineage": "7ee7afe6-264e-c6a4-3d4b-f1430ea019eb",
+  "outputs": {
+    "assigned_vms": {
+      "value": {
+        "ubuntu-vm01": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-01",
+        "ubuntu-vm02": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-02"
+      },
+      "type": [
+        "object",
+        {
+          "ubuntu-vm01": "string",
+          "ubuntu-vm02": "string"
+        }
+      ]
+    },
+    "maintenance_configuration_id": {
+      "value": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Maintenance/maintenanceConfigurations/azr-inf-ubuntu-updates",
+      "type": "string"
+    },
+    "maintenance_configuration_name": {
+      "value": "azr-inf-ubuntu-updates",
+      "type": "string"
+    },
+    "resource_group_name": {
+      "value": "azr-ubuntu-vms-rg",
+      "type": "string"
+    },
+    "ssh_connection_strings": {
+      "value": {
+        "ubuntu-vm01": "ssh ubuntu@51.140.112.60 -i modules/azure_vm/ssh_keys/azr-srv-ubuntu-01_key.pem",
+        "ubuntu-vm02": "ssh ubuntu@51.140.122.228 -i modules/azure_vm/ssh_keys/azr-srv-ubuntu-02_key.pem"
+      },
+      "type": [
+        "object",
+        {
+          "ubuntu-vm01": "string",
+          "ubuntu-vm02": "string"
+        }
+      ]
+    },
+    "update_manager_summary": {
+      "value": {
+        "duration": "03:00",
+        "maintenance_schedule": "2025-07-15 22:00 (GMT Standard Time)",
+        "reboot_setting": "IfRequired",
+        "recurrence": "Month Second Tuesday",
+        "vm_count": 2
+      },
+      "type": [
+        "object",
+        {
+          "duration": "string",
+          "maintenance_schedule": "string",
+          "reboot_setting": "string",
+          "recurrence": "string",
+          "vm_count": "number"
+        }
+      ]
+    },
+    "vm_public_ips": {
+      "value": {
+        "ubuntu-vm01": "51.140.112.60",
+        "ubuntu-vm02": "51.140.122.228"
+      },
+      "type": [
+        "object",
+        {
+          "ubuntu-vm01": "string",
+          "ubuntu-vm02": "string"
+        }
+      ]
+    }
+  },
+  "resources": [
+    {
+      "mode": "managed",
+      "type": "azurerm_maintenance_assignment_virtual_machine",
+      "name": "ubuntu_vm_assignments",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "index_key": "ubuntu-vm01",
+          "schema_version": 1,
+          "attributes": {
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-01/providers/Microsoft.Maintenance/configurationAssignments/azr-inf-ubuntu-updates",
+            "location": "uksouth",
+            "maintenance_configuration_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Maintenance/maintenanceConfigurations/azr-inf-ubuntu-updates",
+            "timeouts": null,
+            "virtual_machine_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-01"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "azurerm_maintenance_configuration.ubuntu_updates",
+            "azurerm_network_interface.nic",
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet",
+            "module.ubuntu_vm.azurerm_dev_test_global_vm_shutdown_schedule.vm_shutdown",
+            "module.ubuntu_vm.azurerm_linux_virtual_machine.vm",
+            "module.ubuntu_vm.local_file.private_key",
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        },
+        {
+          "index_key": "ubuntu-vm02",
+          "schema_version": 1,
+          "attributes": {
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-02/providers/Microsoft.Maintenance/configurationAssignments/azr-inf-ubuntu-updates",
+            "location": "uksouth",
+            "maintenance_configuration_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Maintenance/maintenanceConfigurations/azr-inf-ubuntu-updates",
+            "timeouts": null,
+            "virtual_machine_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-02"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH0sInNjaGVtYV92ZXJzaW9uIjoiMSJ9",
+          "dependencies": [
+            "azurerm_maintenance_configuration.ubuntu_updates",
+            "azurerm_network_interface.nic",
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet",
+            "module.ubuntu_vm.azurerm_dev_test_global_vm_shutdown_schedule.vm_shutdown",
+            "module.ubuntu_vm.azurerm_linux_virtual_machine.vm",
+            "module.ubuntu_vm.local_file.private_key",
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_maintenance_configuration",
+      "name": "ubuntu_updates",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Maintenance/maintenanceConfigurations/azr-inf-ubuntu-updates",
+            "in_guest_user_patch_mode": "User",
+            "install_patches": [
+              {
+                "linux": [
+                  {
+                    "classifications_to_include": [
+                      "Critical",
+                      "Security"
+                    ],
+                    "package_names_mask_to_exclude": [
+                      "kernel*"
+                    ],
+                    "package_names_mask_to_include": []
+                  }
+                ],
+                "reboot": "IfRequired",
+                "windows": []
+              }
+            ],
+            "location": "uksouth",
+            "name": "azr-inf-ubuntu-updates",
+            "properties": {},
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "scope": "InGuestPatch",
+            "tags": {
+              "Environment": "development",
+              "ManagedBy": "Terraform",
+              "Purpose": "UbuntuPatching",
+              "Service": "UpdateManagement"
+            },
+            "timeouts": null,
+            "visibility": "Custom",
+            "window": [
+              {
+                "duration": "03:00",
+                "expiration_date_time": "2026-07-15 22:00",
+                "recur_every": "Month Second Tuesday",
+                "start_date_time": "2025-07-15 22:00",
+                "time_zone": "GMT Standard Time"
+              }
+            ]
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfSwic2NoZW1hX3ZlcnNpb24iOiIxIn0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_network_interface",
+      "name": "nic",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "index_key": "ubuntu-vm01",
+          "schema_version": 0,
+          "attributes": {
+            "accelerated_networking_enabled": false,
+            "applied_dns_servers": [],
+            "auxiliary_mode": "",
+            "auxiliary_sku": "",
+            "dns_servers": [],
+            "edge_zone": "",
+            "enable_accelerated_networking": false,
+            "enable_ip_forwarding": false,
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/networkInterfaces/azr-inf-ubuntu-vm01-nic",
+            "internal_dns_name_label": "",
+            "internal_domain_name_suffix": "c04o2art0eiu1jd2az4wkiusnd.zx.internal.cloudapp.net",
+            "ip_configuration": [
+              {
+                "gateway_load_balancer_frontend_ip_configuration_id": "",
+                "name": "internal",
+                "primary": true,
+                "private_ip_address": "10.0.1.5",
+                "private_ip_address_allocation": "Dynamic",
+                "private_ip_address_version": "IPv4",
+                "public_ip_address_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/publicIPAddresses/azr-inf-ubuntu-vm01-pip",
+                "subnet_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/virtualNetworks/azr-inf-vnet/subnets/azr-inf-subnet"
+              }
+            ],
+            "ip_forwarding_enabled": false,
+            "location": "uksouth",
+            "mac_address": "60-45-BD-11-97-1D",
+            "name": "azr-inf-ubuntu-vm01-nic",
+            "private_ip_address": "10.0.1.5",
+            "private_ip_addresses": [
+              "10.0.1.5"
+            ],
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "tags": {},
+            "timeouts": null,
+            "virtual_machine_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-01"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet"
+          ]
+        },
+        {
+          "index_key": "ubuntu-vm02",
+          "schema_version": 0,
+          "attributes": {
+            "accelerated_networking_enabled": false,
+            "applied_dns_servers": [],
+            "auxiliary_mode": "",
+            "auxiliary_sku": "",
+            "dns_servers": [],
+            "edge_zone": "",
+            "enable_accelerated_networking": false,
+            "enable_ip_forwarding": false,
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/networkInterfaces/azr-inf-ubuntu-vm02-nic",
+            "internal_dns_name_label": "",
+            "internal_domain_name_suffix": "c04o2art0eiu1jd2az4wkiusnd.zx.internal.cloudapp.net",
+            "ip_configuration": [
+              {
+                "gateway_load_balancer_frontend_ip_configuration_id": "",
+                "name": "internal",
+                "primary": true,
+                "private_ip_address": "10.0.1.4",
+                "private_ip_address_allocation": "Dynamic",
+                "private_ip_address_version": "IPv4",
+                "public_ip_address_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/publicIPAddresses/azr-inf-ubuntu-vm02-pip",
+                "subnet_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/virtualNetworks/azr-inf-vnet/subnets/azr-inf-subnet"
+              }
+            ],
+            "ip_forwarding_enabled": false,
+            "location": "uksouth",
+            "mac_address": "7C-ED-8D-39-E6-41",
+            "name": "azr-inf-ubuntu-vm02-nic",
+            "private_ip_address": "10.0.1.4",
+            "private_ip_addresses": [
+              "10.0.1.4"
+            ],
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "tags": {},
+            "timeouts": null,
+            "virtual_machine_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-02"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_network_security_group",
+      "name": "nsg",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/networkSecurityGroups/azr-inf-nsg",
+            "location": "uksouth",
+            "name": "azr-inf-nsg",
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "security_rule": [
+              {
+                "access": "Allow",
+                "description": "",
+                "destination_address_prefix": "*",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "22",
+                "destination_port_ranges": [],
+                "direction": "Inbound",
+                "name": "SSH",
+                "priority": 1001,
+                "protocol": "Tcp",
+                "source_address_prefix": "*",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              },
+              {
+                "access": "Allow",
+                "description": "",
+                "destination_address_prefix": "*",
+                "destination_address_prefixes": [],
+                "destination_application_security_group_ids": [],
+                "destination_port_range": "80",
+                "destination_port_ranges": [],
+                "direction": "Inbound",
+                "name": "HTTP",
+                "priority": 1002,
+                "protocol": "Tcp",
+                "source_address_prefix": "10.0.0.0/16",
+                "source_address_prefixes": [],
+                "source_application_security_group_ids": [],
+                "source_port_range": "*",
+                "source_port_ranges": []
+              }
+            ],
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_public_ip",
+      "name": "public_ip",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "index_key": "ubuntu-vm01",
+          "schema_version": 0,
+          "attributes": {
+            "allocation_method": "Static",
+            "ddos_protection_mode": "VirtualNetworkInherited",
+            "ddos_protection_plan_id": null,
+            "domain_name_label": null,
+            "edge_zone": "",
+            "fqdn": null,
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/publicIPAddresses/azr-inf-ubuntu-vm01-pip",
+            "idle_timeout_in_minutes": 4,
+            "ip_address": "51.140.112.60",
+            "ip_tags": {},
+            "ip_version": "IPv4",
+            "location": "uksouth",
+            "name": "azr-inf-ubuntu-vm01-pip",
+            "public_ip_prefix_id": null,
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "reverse_fqdn": null,
+            "sku": "Basic",
+            "sku_tier": "Regional",
+            "tags": {},
+            "timeouts": null,
+            "zones": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        },
+        {
+          "index_key": "ubuntu-vm02",
+          "schema_version": 0,
+          "attributes": {
+            "allocation_method": "Static",
+            "ddos_protection_mode": "VirtualNetworkInherited",
+            "ddos_protection_plan_id": null,
+            "domain_name_label": null,
+            "edge_zone": "",
+            "fqdn": null,
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/publicIPAddresses/azr-inf-ubuntu-vm02-pip",
+            "idle_timeout_in_minutes": 4,
+            "ip_address": "51.140.122.228",
+            "ip_tags": {},
+            "ip_version": "IPv4",
+            "location": "uksouth",
+            "name": "azr-inf-ubuntu-vm02-pip",
+            "public_ip_prefix_id": null,
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "reverse_fqdn": null,
+            "sku": "Basic",
+            "sku_tier": "Regional",
+            "tags": {},
+            "timeouts": null,
+            "zones": []
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_resource_group",
+      "name": "rg",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg",
+            "location": "uksouth",
+            "managed_by": "",
+            "name": "azr-ubuntu-vms-rg",
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjo1NDAwMDAwMDAwMDAwLCJkZWxldGUiOjU0MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjo1NDAwMDAwMDAwMDAwfX0="
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet",
+      "name": "subnet",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address_prefixes": [
+              "10.0.1.0/24"
+            ],
+            "default_outbound_access_enabled": true,
+            "delegation": [],
+            "enforce_private_link_endpoint_network_policies": false,
+            "enforce_private_link_service_network_policies": false,
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/virtualNetworks/azr-inf-vnet/subnets/azr-inf-subnet",
+            "name": "azr-inf-subnet",
+            "private_endpoint_network_policies": "Enabled",
+            "private_endpoint_network_policies_enabled": true,
+            "private_link_service_network_policies_enabled": true,
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "service_endpoint_policy_ids": [],
+            "service_endpoints": [],
+            "timeouts": null,
+            "virtual_network_name": "azr-inf-vnet"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg",
+            "azurerm_virtual_network.vnet"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_subnet_network_security_group_association",
+      "name": "example",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/virtualNetworks/azr-inf-vnet/subnets/azr-inf-subnet",
+            "network_security_group_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/networkSecurityGroups/azr-inf-nsg",
+            "subnet_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/virtualNetworks/azr-inf-vnet/subnets/azr-inf-subnet",
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMH19",
+          "dependencies": [
+            "azurerm_network_security_group.nsg",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet"
+          ]
+        }
+      ]
+    },
+    {
+      "mode": "managed",
+      "type": "azurerm_virtual_network",
+      "name": "vnet",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "address_space": [
+              "10.0.0.0/16"
+            ],
+            "bgp_community": "",
+            "ddos_protection_plan": [],
+            "dns_servers": [],
+            "edge_zone": "",
+            "encryption": [],
+            "flow_timeout_in_minutes": 0,
+            "guid": "02eebc16-d133-4d11-a47c-067d6522926b",
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/virtualNetworks/azr-inf-vnet",
+            "location": "uksouth",
+            "name": "azr-inf-vnet",
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "subnet": [
+              {
+                "address_prefix": "10.0.1.0/24",
+                "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/virtualNetworks/azr-inf-vnet/subnets/azr-inf-subnet",
+                "name": "azr-inf-subnet",
+                "security_group": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/networkSecurityGroups/azr-inf-nsg"
+              }
+            ],
+            "tags": {},
+            "timeouts": null
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_resource_group.rg"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm01\"]",
+      "mode": "managed",
+      "type": "azurerm_dev_test_global_vm_shutdown_schedule",
+      "name": "vm_shutdown",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "daily_recurrence_time": "1800",
+            "enabled": true,
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.DevTestLab/schedules/shutdown-computevm-azr-srv-ubuntu-01",
+            "location": "uksouth",
+            "notification_settings": [
+              {
+                "email": "",
+                "enabled": false,
+                "time_in_minutes": 30,
+                "webhook_url": ""
+              }
+            ],
+            "tags": {
+              "Environment": "Development",
+              "Name": "ubuntu_vm_01",
+              "OS": "Ubuntu",
+              "Project": "UbuntuLearning",
+              "Purpose": "Testing"
+            },
+            "timeouts": null,
+            "timezone": "GMT Standard Time",
+            "virtual_machine_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-01"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_network_interface.nic",
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet",
+            "module.ubuntu_vm.azurerm_linux_virtual_machine.vm",
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm01\"]",
+      "mode": "managed",
+      "type": "azurerm_linux_virtual_machine",
+      "name": "vm",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "additional_capabilities": [],
+            "admin_password": null,
+            "admin_ssh_key": [
+              {
+                "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDaS92GRLXBC4wYJ9Io9lIPmmH0HAgavZ7AGsE62SV0tH7VfgcrvPTBGdV2yzGRWib0jdm3UnlRUeGq3dSjmijcJ0PcnPrEy9GyWZ0BgcaFaKuNis2xmtImNxsoo/XNDu76Q+fUkOn5tCoRPrWi13mbf0jpscs1it5paR3gnv2IXFBFiIONQifmERJezOeXTp8ZjyMcRyPYwTZ+k6yOvOfegJc7kGpZbN5oII+QuliXWKHgCqm3vHSOQ17s2a8weJ3sOCDJ4UHtqKtCYIgAy1VmV/xzctQrdpryJJY+9kXKafyI/MIuibFA5G9WvFD/pPEp7HESqCo7fUF6eY0fz1YvXzCLEq6TSAQO3xT8n1ttM4fApIEnZoeUC+TwdeKspbv69veOcBVg2DFmVY1ndB1g8/Q285OrVRgVFpJnsaqspxWDBmCB/FlT3SFOxak6L/Dajo3tu30co123GMWgwcaYccjhOXjIhs4ZwsfoTNMCJLIQpkcEEiND0y3B7z49tNBoXRfd2uaS9K7EDQdvhrmx4DGU4xAQ4EUxvdF/+07zPGvOuXVD0XUziR4l3fVJGzzXE0eRmM3j6KnxApU3wt9Gvl8wHncPubjZkk7bmv8UWDhVAB2YACzZjvqBTz/dCtaAjIFLgQPlvj32Uvv9HRgiGsj3LuyTWMN3s7UP22xLxQ==\n",
+                "username": "ubuntu"
+              }
+            ],
+            "admin_username": "ubuntu",
+            "allow_extension_operations": true,
+            "availability_set_id": "",
+            "boot_diagnostics": [],
+            "bypass_platform_safety_checks_on_user_schedule_enabled": true,
+            "capacity_reservation_group_id": "",
+            "computer_name": "azr-srv-ubuntu-01",
+            "custom_data": "IyBtb2R1bGVzL2F6dXJlX3ZtL3VidW50dS1pbml0LnltbAojY2xvdWQtY29uZmlnCgpwYWNrYWdlX3VwZGF0ZTogdHJ1ZQpwYWNrYWdlX3VwZ3JhZGU6IGZhbHNlICAjIERvbid0IGF1dG8tdXBncmFkZSBvbiBmaXJzdCBib290CgpwYWNrYWdlczoKICAtIHdnZXQKICAtIGN1cmwKICAtIHZpbQogIC0gaHRvcAoKd3JpdGVfZmlsZXM6CiAgLSBwYXRoOiAvZXRjL2FwdC9zb3VyY2VzLmxpc3QuZC9sb2NhbC1taXJyb3IubGlzdAogICAgY29udGVudDogfAogICAgICAjIExvY2FsIFVidW50dSBtaXJyb3IgY29uZmlndXJhdGlvbgogICAgICAjIFVuY29tbWVudCB0byB1c2UgbG9jYWwgbWlycm9yIGluc3RlYWQgb2YgYXJjaGl2ZS51YnVudHUuY29tCiAgICAgICMgZGViIGh0dHA6Ly8xNzIuMTYuMS40L3VidW50dS9hcmNoaXZlLnVidW50dS5jb20vdWJ1bnR1IGphbW15IG1haW4gcmVzdHJpY3RlZCB1bml2ZXJzZSBtdWx0aXZlcnNlCiAgICAgICMgZGViIGh0dHA6Ly8xNzIuMTYuMS40L3VidW50dS9hcmNoaXZlLnVidW50dS5jb20vdWJ1bnR1IGphbW15LXVwZGF0ZXMgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKICAgICAgIyBkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktc2VjdXJpdHkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKICAgICAgIyBkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktYmFja3BvcnRzIG1haW4gcmVzdHJpY3RlZCB1bml2ZXJzZSBtdWx0aXZlcnNlCgogIC0gcGF0aDogL3Vzci9sb2NhbC9iaW4vc2V0dXAtdWJ1bnR1LW1pcnJvci5zaAogICAgcGVybWlzc2lvbnM6ICcwNzU1JwogICAgY29udGVudDogfAogICAgICAjIS9iaW4vYmFzaAogICAgICAjIFNjcmlwdCB0byBjb25maWd1cmUgVWJ1bnR1IHRvIHVzZSBsb2NhbCBtaXJyb3IKCiAgICAgIGVjaG8gIkNvbmZpZ3VyaW5nIFVidW50dSB0byB1c2UgbG9jYWwgcmVwb3NpdG9yeSBtaXJyb3IuLi4iCgogICAgICAjIFRlc3QgY29ubmVjdGl2aXR5IHRvIG1pcnJvciBzZXJ2ZXIKICAgICAgaWYgY3VybCAtcyBodHRwOi8vMTcyLjE2LjEuNCA+IC9kZXYvbnVsbDsgdGhlbgogICAgICAgICAgZWNobyAiTWlycm9yIHNlcnZlciBpcyBhY2Nlc3NpYmxlIGF0IDE3Mi4xNi4xLjQiCgogICAgICAgICAgIyBCYWNrdXAgb3JpZ2luYWwgc291cmNlcy5saXN0CiAgICAgICAgICBjcCAvZXRjL2FwdC9zb3VyY2VzLmxpc3QgL2V0Yy9hcHQvc291cmNlcy5saXN0LmJhY2t1cAoKICAgICAgICAgICMgQ3JlYXRlIG5ldyBzb3VyY2VzLmxpc3Qgd2l0aCBsb2NhbCBtaXJyb3IKICAgICAgICAgIGNhdCA+IC9ldGMvYXB0L3NvdXJjZXMubGlzdCA8PCBFT0YKIyBMb2NhbCBVYnVudHUgTWlycm9yCmRlYiBodHRwOi8vMTcyLjE2LjEuNC91YnVudHUvYXJjaGl2ZS51YnVudHUuY29tL3VidW50dSBqYW1teSBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQpkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktdXBkYXRlcyBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQpkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktc2VjdXJpdHkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKZGViIGh0dHA6Ly8xNzIuMTYuMS40L3VidW50dS9hcmNoaXZlLnVidW50dS5jb20vdWJ1bnR1IGphbW15LWJhY2twb3J0cyBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQoKIyBGYWxsYmFjayB0byBvZmZpY2lhbCByZXBvcyAoY29tbWVudGVkIG91dCkKIyBkZWIgaHR0cDovL2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKIyBkZWIgaHR0cDovL2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktdXBkYXRlcyBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQojIGRlYiBodHRwOi8vc2VjdXJpdHkudWJ1bnR1LmNvbS91YnVudHUgamFtbXktc2VjdXJpdHkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKIyBkZWIgaHR0cDovL2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktYmFja3BvcnRzIG1haW4gcmVzdHJpY3RlZCB1bml2ZXJzZSBtdWx0aXZlcnNlCkVPRgoKICAgICAgICAgICMgVXBkYXRlIHBhY2thZ2UgbGlzdHMKICAgICAgICAgIGFwdCB1cGRhdGUKCiAgICAgICAgICBlY2hvICJMb2NhbCBtaXJyb3IgY29uZmlndXJhdGlvbiBjb21wbGV0ZWQiCiAgICAgIGVsc2UKICAgICAgICAgIGVjaG8gIk1pcnJvciBzZXJ2ZXIgbm90IGFjY2Vzc2libGUuIFVzaW5nIGRlZmF1bHQgcmVwb3NpdG9yaWVzLiIKICAgICAgZmkKCnJ1bmNtZDoKICAtIC91c3IvbG9jYWwvYmluL3NldHVwLXVidW50dS1taXJyb3Iuc2gKCmZpbmFsX21lc3NhZ2U6ICJVYnVudHUgVk0gc2V0dXAgY29tcGxldGVkLiBMb2NhbCBtaXJyb3IgY29uZmlndXJlZCBpZiBhdmFpbGFibGUuIg==",
+            "dedicated_host_group_id": "",
+            "dedicated_host_id": "",
+            "disable_password_authentication": true,
+            "disk_controller_type": "SCSI",
+            "edge_zone": "",
+            "encryption_at_host_enabled": false,
+            "eviction_policy": "",
+            "extensions_time_budget": "PT1H30M",
+            "gallery_application": [],
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-01",
+            "identity": [],
+            "license_type": "",
+            "location": "uksouth",
+            "max_bid_price": -1,
+            "name": "azr-srv-ubuntu-01",
+            "network_interface_ids": [
+              "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/networkInterfaces/azr-inf-ubuntu-vm01-nic"
+            ],
+            "os_disk": [
+              {
+                "caching": "ReadWrite",
+                "diff_disk_settings": [],
+                "disk_encryption_set_id": "",
+                "disk_size_gb": 30,
+                "name": "azr-srv-ubuntu-01_OsDisk_1_c27783e8a99043eb9432ec2f6a081310",
+                "secure_vm_disk_encryption_set_id": "",
+                "security_encryption_type": "",
+                "storage_account_type": "Standard_LRS",
+                "write_accelerator_enabled": false
+              }
+            ],
+            "os_image_notification": [],
+            "patch_assessment_mode": "AutomaticByPlatform",
+            "patch_mode": "AutomaticByPlatform",
+            "plan": [],
+            "platform_fault_domain": -1,
+            "priority": "Regular",
+            "private_ip_address": "10.0.1.5",
+            "private_ip_addresses": [
+              "10.0.1.5"
+            ],
+            "provision_vm_agent": true,
+            "proximity_placement_group_id": "",
+            "public_ip_address": "51.140.112.60",
+            "public_ip_addresses": [
+              "51.140.112.60"
+            ],
+            "reboot_setting": "",
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "secret": [],
+            "secure_boot_enabled": false,
+            "size": "Standard_B2s",
+            "source_image_id": "",
+            "source_image_reference": [
+              {
+                "offer": "0001-com-ubuntu-server-jammy",
+                "publisher": "Canonical",
+                "sku": "22_04-lts-gen2",
+                "version": "latest"
+              }
+            ],
+            "tags": {
+              "Environment": "Development",
+              "Name": "ubuntu_vm_01",
+              "OS": "Ubuntu",
+              "Project": "UbuntuLearning",
+              "Purpose": "Testing"
+            },
+            "termination_notification": [],
+            "timeouts": null,
+            "user_data": "",
+            "virtual_machine_id": "82cbdd5c-c3e9-4164-8590-fcf5e583b778",
+            "virtual_machine_scale_set_id": "",
+            "vm_agent_platform_updates_enabled": false,
+            "vtpm_enabled": false,
+            "zone": ""
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "custom_data"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "admin_password"
+              }
+            ]
+          ],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoyNzAwMDAwMDAwMDAwLCJkZWxldGUiOjI3MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoyNzAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_network_interface.nic",
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet",
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm01\"]",
+      "mode": "managed",
+      "type": "local_file",
+      "name": "private_key",
+      "provider": "provider[\"registry.terraform.io/hashicorp/local\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "content": "-----BEGIN RSA PRIVATE KEY-----\nMIIJKQIBAAKCAgEA2kvdhkS1wQuMGCfSKPZSD5ph9BwIGr2ewBrBOtkldLR+1X4H\nK7z0wRnVdssxkVom9I3Zt1J5UVHhqt3Uo5oo3CdD3Jz6xMvRslmdAYHGhWirjYrN\nsZrSJjcbKKP1zQ7u+kPn1JDp+bQqET61otd5m39I6bHLNYreaWkd4J79iFxQRYiD\njUIn5hESXsznl06fGY8jHEcj2ME2fpOsjrzn3oCXO5BqWWzeaCCPkLpYl1ih4Aqp\nt7x0jkNe7NmvMHid7DggyeFB7airQmCIAMtVZlf8c3LUK3aa8iSWPvZFymn8iPzC\nLomxQORvVrxQ/6TxKexxEqgqO31BenmNH89WL18wixKuk0gEDt8U/J9bbTOHwKSB\nJ2aHlAvk8HXirKW7+vb3jnAVYNgxZlWNZ3QdYPP0NvOTq1UYFRaSZ7GqrKcVgwZg\ngfxZU90hTsWpOi/w2o6N7bt9HKNdtxjFoMHGmHHI4Tl4yIbOGcLH6EzTAiSyEKZH\nBBIjQ9Mtwe8+PbTQaF0X3drmkvSuxA0Hb4a5seAxlOMQEOBFMb3Rf/tO8zxrzrl1\nQ9F1M4keJd31SRs81xNHkZjN4+ip8QKVN8LfRr5fMB53D7m42ZJO25r/FFg4VQAd\nmAAs2Y76gU8/3QrWgIyBS4ED5b499lL7/R0YIhrI9y7sk1jDd7O1D9tsS8UCAwEA\nAQKCAgEAxcm/aYyP8d14jdpmvN6R87k5z2gmn7P3Rq/3LE7bdSalVOLftG18hgnW\nM9BflQdODH8KKOP9MAU0pxBfPezL4M1i210QiYby9NnlPBxNt0rjRVfij21rw1xi\nqywD5kwFk5Q7VYoHtUvcYcuj32vEr3NgqP2C1XyBkJjBjWgA57BcuuO57h9m7znA\nn0yg+aMu3IWollKO1DIcIgvDaYEXxa5VWI69DVFrIoV+DvAInPidktWWePez08KP\nG6MQ7KYc0I76hnAmwCL3KSk1kSKquhQ2lJQSUV8hfQxRZbLWAVSOj8AUYP45MEbJ\n6pit+zODnyywNutPeJ9A2KuRhqThvFXnDa9UHkx8GlUDNnLzqjS+m6QQ9f1fsF3z\n+EXRsOSpz87Ch3uL+ziy4mhHiAl8+vmxjA6KrE1WTzNWeLRtdBMfHl5fGlFsosx9\nYLa4FhmZ8nuue2vTgvfOV4IhV+pugeF49/QIz6ilLZpilBbsY9zXkS7CMcl5U/RY\nJhIHDI+ktP7FwCfZi+PqDkkvOSvDS3XjKX1awpYy6lxz7P3+YftlTci7eYSC6ofw\nBghk4Ywtk8ihM4FOjkEH8ANDe2ks22bkS9EV1bIMuqe0p63AxjqKTCg9A9HQ0rTJ\nB52/a4RPI9R0Fm0IQb2YnKmHJWxE5gLjJ5P2sDj+fS3i0CmcoAECggEBAO7WOW6g\nmMMGk1L1fOQp5M9m+eS1tZsgl4Src+oW2jWlSsTep6oG5TSsosvsn3jaASJfghiz\nCtYJfKNAQg0mS2lkCdAR2y5btSrIOM8oHsH5xxS34cqHn5lSjyLCdQUWkNkZgJqv\ncA0CeOJUOBHWys6JrYjDaCEwF86CbaYeMn/vjPQfqFfSVtxuZ457mh/giUIkZnmd\nG+hi+Pte1xx7LkB3f/h1oGjgVWlnPSeuZ1RElNYQp5fmfSS9v3XYH9OHkbIaGQEn\nONqgnIyQOAOccWX19EKmh9BdBZ2MgHpPahoWKtugpj3EaE0YZIGScy4ONFE1LxXM\njJLC+N1xrf16ggECggEBAOn7xGC9ePk1zzbxqhevkgvmWV7pFF55+5cE91+fpW+T\nrVA2xvKr3WoIS1PH/qBGX3ZWB/UlmBkYGFk44hT+/Rj7f898rNaMdUlyXJAePSLP\n0483MNpAhqow5Ax2JplcFJCM6oGAXd38BmqZh7ulpvUN7MD2rohYq0czEgWA0/oV\ny8nW4RvYDSFzp8ESBeGlnfsX7XLCnHapVBhrwWbOQE/RtZfu4kQfvqPDv3pNzlZz\nZ4woQV9YW2/uQij2SH5ez0LeUQRMuSi4RIWnHqPrnM9jTc/BwB+4N6nHRzaeSfws\nVrXK6/8M3Ufr4DQ1eyhMiTL0oqnRJcxe76siQ2kkQcUCggEBALXjI33ihDQSL+Q/\n3EsOtJhWvfy1fYaUPY/l2rLtkGTGarifMGTGN4vz5U8T9ybcL3zz62nQAHKcavUQ\nnLzS6x9p9iclUhxt7vyT2t+4mCP1iu12VFgfDSaAv00jdmbXlpwfVdd3wAfIWDNV\nHBZJ082TADtlRUnxDFBS+BpIaQERd/D6owOuxkO9ONRDwU6Be0aJ3hjD01sY9LDK\nu1uPW9vwpd6cBfuYzLMm0mYD5eFBEXAs4tVFzQxMDSE75JD9b7GJOn2sVxn4swBB\nXMczPxD9THXtyQSfswUW2UlMbWtMcnssTy4/A4ejCfe7hkgOvT0TGbaqPmwOW+SZ\nDH477AECggEAd+rktn/k5DRDwvEQL5t3ykmAPDhQjCsQWlHdRlDXxNt208l/JRgY\nHiOqF4JEaXgnrMpiwa1GynWi5PdWR1R3+rnKw1gubLcH1WCbN/GHe7PvxVKP4wt2\n+PqdphVXqvmaQIs4FK7pbL+hujh9bBp1+tnsIOlMgeyPu6nc7p0cBuvsycErFc4g\nzKgtrbHC+eablPiqZUqATgBybSGsuTezljTwULHJnQh3+A52sAP4YC49P4PSHT93\nfWIq3jt64+lLaAXwl7eKnefyll0UQwaaE1/dnUC7aoZLYOQVB1UQrgE7X2hkkw7Q\nye+FtLxEJl8zYb4nL8lVCe0OADNLQTOn0QKCAQAWd83THeQZnHaOx11CcjO/9sMQ\nsFjhx7qAPA3J4gjp6EMsmZkGTyTMDivsKi1kMPRIc9wZLnMBe4ZigTIdNZZqz7dN\nAFyQJOvEvwn4mSswTm8TM6pr7KF5pnx/xUTwdHKI3ZaW83zHUzZLvowFWn4/NKHG\n36tT7l8HLOIKf+mWLeDh0irVR+mKzgO8LCLNPsfULMTB8Fo+vXm8W2/5UvlqLxT3\n9CnfqY4E74/jXGHVRmiURAqtbi7BfcTtx8lKPFkVkrJ0jU0439XDun3KlHCQCib5\nV30j1DMcpLRedGyw5Dwejj7kDpyTTIPQe1YIC/KphiCJXAz5RvvV06uPiX2b\n-----END RSA PRIVATE KEY-----\n",
+            "content_base64": null,
+            "content_base64sha256": "vS8XPdjt1j5c0pDTKOqSIbYYMiHfTq9YxaaI1cH60C0=",
+            "content_base64sha512": "N7A17Q/THZog0MrraouRAqdEcogLTc3KRiEg/BJBhlru0knzW88Ntrp0NtTJbL3H//3H6mzT3UYOY4wRb+YmYg==",
+            "content_md5": "204a4844380f5e14b2c1830683e2bb24",
+            "content_sha1": "9486055781c9050071de80567d69bb41bf22a8be",
+            "content_sha256": "bd2f173dd8edd63e5cd290d328ea9221b6183221df4eaf58c5a688d5c1fad02d",
+            "content_sha512": "37b035ed0fd31d9a20d0caeb6a8b9102a74472880b4dcdca462120fc1241865aeed249f35bcf0db6ba7436d4c96cbdc7fffdc7ea6cd3dd460e638c116fe62662",
+            "directory_permission": "0777",
+            "file_permission": "0600",
+            "filename": "modules/azure_vm/ssh_keys/azr-srv-ubuntu-01_key.pem",
+            "id": "9486055781c9050071de80567d69bb41bf22a8be",
+            "sensitive_content": null,
+            "source": null
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "sensitive_content"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "content"
+              }
+            ]
+          ],
+          "dependencies": [
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm01\"]",
+      "mode": "managed",
+      "type": "tls_private_key",
+      "name": "ssh_key",
+      "provider": "provider[\"registry.terraform.io/hashicorp/tls\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "algorithm": "RSA",
+            "ecdsa_curve": "P224",
+            "id": "c724739a1d6cd57f1a66184a0ef3917fbe81df47",
+            "private_key_openssh": "-----BEGIN OPENSSH PRIVATE KEY-----\n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\n-----END OPENSSH PRIVATE KEY-----\n",
+            "private_key_pem": "-----BEGIN RSA PRIVATE KEY-----\n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\n-----END RSA PRIVATE KEY-----\n",
+            "private_key_pem_pkcs8": "-----BEGIN PRIVATE KEY-----\n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\ng9B7VggL8qmGIIlcDPlG+9XTq4+JfZs=\n-----END PRIVATE KEY-----\n",
+            "public_key_fingerprint_md5": "17:47:2c:74:26:55:dc:9a:63:bc:c9:4c:2b:c0:df:d5",
+            "public_key_fingerprint_sha256": "SHA256:EFvp8pKKbbpwq1FQ8zfCCVGjMAd2SpuAIiWe8pzu93g",
+            "public_key_openssh": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQDaS92GRLXBC4wYJ9Io9lIPmmH0HAgavZ7AGsE62SV0tH7VfgcrvPTBGdV2yzGRWib0jdm3UnlRUeGq3dSjmijcJ0PcnPrEy9GyWZ0BgcaFaKuNis2xmtImNxsoo/XNDu76Q+fUkOn5tCoRPrWi13mbf0jpscs1it5paR3gnv2IXFBFiIONQifmERJezOeXTp8ZjyMcRyPYwTZ+k6yOvOfegJc7kGpZbN5oII+QuliXWKHgCqm3vHSOQ17s2a8weJ3sOCDJ4UHtqKtCYIgAy1VmV/xzctQrdpryJJY+9kXKafyI/MIuibFA5G9WvFD/pPEp7HESqCo7fUF6eY0fz1YvXzCLEq6TSAQO3xT8n1ttM4fApIEnZoeUC+TwdeKspbv69veOcBVg2DFmVY1ndB1g8/Q285OrVRgVFpJnsaqspxWDBmCB/FlT3SFOxak6L/Dajo3tu30co123GMWgwcaYccjhOXjIhs4ZwsfoTNMCJLIQpkcEEiND0y3B7z49tNBoXRfd2uaS9K7EDQdvhrmx4DGU4xAQ4EUxvdF/+07zPGvOuXVD0XUziR4l3fVJGzzXE0eRmM3j6KnxApU3wt9Gvl8wHncPubjZkk7bmv8UWDhVAB2YACzZjvqBTz/dCtaAjIFLgQPlvj32Uvv9HRgiGsj3LuyTWMN3s7UP22xLxQ==\n",
+            "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEA2kvdhkS1wQuMGCfSKPZS\nD5ph9BwIGr2ewBrBOtkldLR+1X4HK7z0wRnVdssxkVom9I3Zt1J5UVHhqt3Uo5oo\n3CdD3Jz6xMvRslmdAYHGhWirjYrNsZrSJjcbKKP1zQ7u+kPn1JDp+bQqET61otd5\nm39I6bHLNYreaWkd4J79iFxQRYiDjUIn5hESXsznl06fGY8jHEcj2ME2fpOsjrzn\n3oCXO5BqWWzeaCCPkLpYl1ih4Aqpt7x0jkNe7NmvMHid7DggyeFB7airQmCIAMtV\nZlf8c3LUK3aa8iSWPvZFymn8iPzCLomxQORvVrxQ/6TxKexxEqgqO31BenmNH89W\nL18wixKuk0gEDt8U/J9bbTOHwKSBJ2aHlAvk8HXirKW7+vb3jnAVYNgxZlWNZ3Qd\nYPP0NvOTq1UYFRaSZ7GqrKcVgwZggfxZU90hTsWpOi/w2o6N7bt9HKNdtxjFoMHG\nmHHI4Tl4yIbOGcLH6EzTAiSyEKZHBBIjQ9Mtwe8+PbTQaF0X3drmkvSuxA0Hb4a5\nseAxlOMQEOBFMb3Rf/tO8zxrzrl1Q9F1M4keJd31SRs81xNHkZjN4+ip8QKVN8Lf\nRr5fMB53D7m42ZJO25r/FFg4VQAdmAAs2Y76gU8/3QrWgIyBS4ED5b499lL7/R0Y\nIhrI9y7sk1jDd7O1D9tsS8UCAwEAAQ==\n-----END PUBLIC KEY-----\n",
+            "rsa_bits": 4096
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_openssh"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_pem"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_pem_pkcs8"
+              }
+            ]
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm02\"]",
+      "mode": "managed",
+      "type": "azurerm_dev_test_global_vm_shutdown_schedule",
+      "name": "vm_shutdown",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "index_key": 0,
+          "schema_version": 0,
+          "attributes": {
+            "daily_recurrence_time": "1800",
+            "enabled": true,
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.DevTestLab/schedules/shutdown-computevm-azr-srv-ubuntu-02",
+            "location": "uksouth",
+            "notification_settings": [
+              {
+                "email": "",
+                "enabled": false,
+                "time_in_minutes": 30,
+                "webhook_url": ""
+              }
+            ],
+            "tags": {
+              "Environment": "Development",
+              "Name": "ubuntu_vm_02",
+              "OS": "Ubuntu",
+              "Project": "UbuntuLearning",
+              "Purpose": "Development"
+            },
+            "timeouts": null,
+            "timezone": "GMT Standard Time",
+            "virtual_machine_id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-02"
+          },
+          "sensitive_attributes": [],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoxODAwMDAwMDAwMDAwLCJkZWxldGUiOjE4MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoxODAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_network_interface.nic",
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet",
+            "module.ubuntu_vm.azurerm_linux_virtual_machine.vm",
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm02\"]",
+      "mode": "managed",
+      "type": "azurerm_linux_virtual_machine",
+      "name": "vm",
+      "provider": "provider[\"registry.terraform.io/hashicorp/azurerm\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "additional_capabilities": [],
+            "admin_password": null,
+            "admin_ssh_key": [
+              {
+                "public_key": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCsdGzf2na+4dT/yynphKN4YNBa+3hYPVEJTVCxUXHJrOkLX6cSPdwIX7Y/wIpQmSOI9ShQo8ZQfwcq90OeYX+mXpytvaw259tha+HhB1+puMqX/DjvDkUP6RNh0Vw+uJRu4TwKO5jFZLlpEpqekSqFWoN4EXwS2pBHLrmDjRqlpX1wd5QhZzl/rnqMh15SokErnQMJ8EZnGhAcVb5QO9ccNI5XWksO0US7W1oHreFisZcFYyDiaBqr8mDLflGYEIAjVGV9tOgA2ra2nFi/E8/3qqngi+V/+C++L3gnkkn2AUgZ5ppKz9H9bNvOdF0eNMyEFplXSA3zst7NLeOCeeyl2QuJ8bsR0AZ1DnZA74Dpx2RVzl3c+shojo+nQ18AVNHamhLGp+RHNdbA7v47SCSz1hCb/MmVkHuv9Ts3PxkGAI6V+EMaDI7GHxtD6DpkI4IpJ2ha6O3e10yuw+Gm0DXCnueIu+SS9BYumsZTlL1UK0XlhahB1NC9g/sDbAvJFS5uLQt1src6ZtNJjYD6oQ0J6mjr129owfhyO3tG1QOuc4ErptVCQy57gGNdKa5F+BfYM/wBeBMkhEHNHSkXg4xlEHdQ0T6JTbfKNxYp4O0frgBTBM98Wds5ROky7V9csBNlDaHOr8Rq2fGp1LMXo8p/WkwvOKbsI86lAFIkFJ84/w==\n",
+                "username": "ubuntu"
+              }
+            ],
+            "admin_username": "ubuntu",
+            "allow_extension_operations": true,
+            "availability_set_id": "",
+            "boot_diagnostics": [],
+            "bypass_platform_safety_checks_on_user_schedule_enabled": true,
+            "capacity_reservation_group_id": "",
+            "computer_name": "azr-srv-ubuntu-02",
+            "custom_data": "IyBtb2R1bGVzL2F6dXJlX3ZtL3VidW50dS1pbml0LnltbAojY2xvdWQtY29uZmlnCgpwYWNrYWdlX3VwZGF0ZTogdHJ1ZQpwYWNrYWdlX3VwZ3JhZGU6IGZhbHNlICAjIERvbid0IGF1dG8tdXBncmFkZSBvbiBmaXJzdCBib290CgpwYWNrYWdlczoKICAtIHdnZXQKICAtIGN1cmwKICAtIHZpbQogIC0gaHRvcAoKd3JpdGVfZmlsZXM6CiAgLSBwYXRoOiAvZXRjL2FwdC9zb3VyY2VzLmxpc3QuZC9sb2NhbC1taXJyb3IubGlzdAogICAgY29udGVudDogfAogICAgICAjIExvY2FsIFVidW50dSBtaXJyb3IgY29uZmlndXJhdGlvbgogICAgICAjIFVuY29tbWVudCB0byB1c2UgbG9jYWwgbWlycm9yIGluc3RlYWQgb2YgYXJjaGl2ZS51YnVudHUuY29tCiAgICAgICMgZGViIGh0dHA6Ly8xNzIuMTYuMS40L3VidW50dS9hcmNoaXZlLnVidW50dS5jb20vdWJ1bnR1IGphbW15IG1haW4gcmVzdHJpY3RlZCB1bml2ZXJzZSBtdWx0aXZlcnNlCiAgICAgICMgZGViIGh0dHA6Ly8xNzIuMTYuMS40L3VidW50dS9hcmNoaXZlLnVidW50dS5jb20vdWJ1bnR1IGphbW15LXVwZGF0ZXMgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKICAgICAgIyBkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktc2VjdXJpdHkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKICAgICAgIyBkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktYmFja3BvcnRzIG1haW4gcmVzdHJpY3RlZCB1bml2ZXJzZSBtdWx0aXZlcnNlCgogIC0gcGF0aDogL3Vzci9sb2NhbC9iaW4vc2V0dXAtdWJ1bnR1LW1pcnJvci5zaAogICAgcGVybWlzc2lvbnM6ICcwNzU1JwogICAgY29udGVudDogfAogICAgICAjIS9iaW4vYmFzaAogICAgICAjIFNjcmlwdCB0byBjb25maWd1cmUgVWJ1bnR1IHRvIHVzZSBsb2NhbCBtaXJyb3IKCiAgICAgIGVjaG8gIkNvbmZpZ3VyaW5nIFVidW50dSB0byB1c2UgbG9jYWwgcmVwb3NpdG9yeSBtaXJyb3IuLi4iCgogICAgICAjIFRlc3QgY29ubmVjdGl2aXR5IHRvIG1pcnJvciBzZXJ2ZXIKICAgICAgaWYgY3VybCAtcyBodHRwOi8vMTcyLjE2LjEuNCA+IC9kZXYvbnVsbDsgdGhlbgogICAgICAgICAgZWNobyAiTWlycm9yIHNlcnZlciBpcyBhY2Nlc3NpYmxlIGF0IDE3Mi4xNi4xLjQiCgogICAgICAgICAgIyBCYWNrdXAgb3JpZ2luYWwgc291cmNlcy5saXN0CiAgICAgICAgICBjcCAvZXRjL2FwdC9zb3VyY2VzLmxpc3QgL2V0Yy9hcHQvc291cmNlcy5saXN0LmJhY2t1cAoKICAgICAgICAgICMgQ3JlYXRlIG5ldyBzb3VyY2VzLmxpc3Qgd2l0aCBsb2NhbCBtaXJyb3IKICAgICAgICAgIGNhdCA+IC9ldGMvYXB0L3NvdXJjZXMubGlzdCA8PCBFT0YKIyBMb2NhbCBVYnVudHUgTWlycm9yCmRlYiBodHRwOi8vMTcyLjE2LjEuNC91YnVudHUvYXJjaGl2ZS51YnVudHUuY29tL3VidW50dSBqYW1teSBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQpkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktdXBkYXRlcyBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQpkZWIgaHR0cDovLzE3Mi4xNi4xLjQvdWJ1bnR1L2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktc2VjdXJpdHkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKZGViIGh0dHA6Ly8xNzIuMTYuMS40L3VidW50dS9hcmNoaXZlLnVidW50dS5jb20vdWJ1bnR1IGphbW15LWJhY2twb3J0cyBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQoKIyBGYWxsYmFjayB0byBvZmZpY2lhbCByZXBvcyAoY29tbWVudGVkIG91dCkKIyBkZWIgaHR0cDovL2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKIyBkZWIgaHR0cDovL2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktdXBkYXRlcyBtYWluIHJlc3RyaWN0ZWQgdW5pdmVyc2UgbXVsdGl2ZXJzZQojIGRlYiBodHRwOi8vc2VjdXJpdHkudWJ1bnR1LmNvbS91YnVudHUgamFtbXktc2VjdXJpdHkgbWFpbiByZXN0cmljdGVkIHVuaXZlcnNlIG11bHRpdmVyc2UKIyBkZWIgaHR0cDovL2FyY2hpdmUudWJ1bnR1LmNvbS91YnVudHUgamFtbXktYmFja3BvcnRzIG1haW4gcmVzdHJpY3RlZCB1bml2ZXJzZSBtdWx0aXZlcnNlCkVPRgoKICAgICAgICAgICMgVXBkYXRlIHBhY2thZ2UgbGlzdHMKICAgICAgICAgIGFwdCB1cGRhdGUKCiAgICAgICAgICBlY2hvICJMb2NhbCBtaXJyb3IgY29uZmlndXJhdGlvbiBjb21wbGV0ZWQiCiAgICAgIGVsc2UKICAgICAgICAgIGVjaG8gIk1pcnJvciBzZXJ2ZXIgbm90IGFjY2Vzc2libGUuIFVzaW5nIGRlZmF1bHQgcmVwb3NpdG9yaWVzLiIKICAgICAgZmkKCnJ1bmNtZDoKICAtIC91c3IvbG9jYWwvYmluL3NldHVwLXVidW50dS1taXJyb3Iuc2gKCmZpbmFsX21lc3NhZ2U6ICJVYnVudHUgVk0gc2V0dXAgY29tcGxldGVkLiBMb2NhbCBtaXJyb3IgY29uZmlndXJlZCBpZiBhdmFpbGFibGUuIg==",
+            "dedicated_host_group_id": "",
+            "dedicated_host_id": "",
+            "disable_password_authentication": true,
+            "disk_controller_type": "SCSI",
+            "edge_zone": "",
+            "encryption_at_host_enabled": false,
+            "eviction_policy": "",
+            "extensions_time_budget": "PT1H30M",
+            "gallery_application": [],
+            "id": "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Compute/virtualMachines/azr-srv-ubuntu-02",
+            "identity": [],
+            "license_type": "",
+            "location": "uksouth",
+            "max_bid_price": -1,
+            "name": "azr-srv-ubuntu-02",
+            "network_interface_ids": [
+              "/subscriptions/810ef0ef-448f-48b1-88b9-1f3f0f26a320/resourceGroups/azr-ubuntu-vms-rg/providers/Microsoft.Network/networkInterfaces/azr-inf-ubuntu-vm02-nic"
+            ],
+            "os_disk": [
+              {
+                "caching": "ReadWrite",
+                "diff_disk_settings": [],
+                "disk_encryption_set_id": "",
+                "disk_size_gb": 30,
+                "name": "azr-srv-ubuntu-02_disk1_26d7a17dfee64f3bb9dad2b1d2605d17",
+                "secure_vm_disk_encryption_set_id": "",
+                "security_encryption_type": "",
+                "storage_account_type": "Standard_LRS",
+                "write_accelerator_enabled": false
+              }
+            ],
+            "os_image_notification": [],
+            "patch_assessment_mode": "AutomaticByPlatform",
+            "patch_mode": "AutomaticByPlatform",
+            "plan": [],
+            "platform_fault_domain": -1,
+            "priority": "Regular",
+            "private_ip_address": "10.0.1.4",
+            "private_ip_addresses": [
+              "10.0.1.4"
+            ],
+            "provision_vm_agent": true,
+            "proximity_placement_group_id": "",
+            "public_ip_address": "51.140.122.228",
+            "public_ip_addresses": [
+              "51.140.122.228"
+            ],
+            "reboot_setting": "",
+            "resource_group_name": "azr-ubuntu-vms-rg",
+            "secret": [],
+            "secure_boot_enabled": false,
+            "size": "Standard_B2s",
+            "source_image_id": "",
+            "source_image_reference": [
+              {
+                "offer": "0001-com-ubuntu-server-jammy",
+                "publisher": "Canonical",
+                "sku": "22_04-lts-gen2",
+                "version": "latest"
+              }
+            ],
+            "tags": {
+              "Environment": "Development",
+              "Name": "ubuntu_vm_02",
+              "OS": "Ubuntu",
+              "Project": "UbuntuLearning",
+              "Purpose": "Development"
+            },
+            "termination_notification": [],
+            "timeouts": null,
+            "user_data": "",
+            "virtual_machine_id": "47a29eda-4b96-4a09-85f7-c7c6dc363ff8",
+            "virtual_machine_scale_set_id": "",
+            "vm_agent_platform_updates_enabled": false,
+            "vtpm_enabled": false,
+            "zone": ""
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "admin_password"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "custom_data"
+              }
+            ]
+          ],
+          "private": "eyJlMmJmYjczMC1lY2FhLTExZTYtOGY4OC0zNDM2M2JjN2M0YzAiOnsiY3JlYXRlIjoyNzAwMDAwMDAwMDAwLCJkZWxldGUiOjI3MDAwMDAwMDAwMDAsInJlYWQiOjMwMDAwMDAwMDAwMCwidXBkYXRlIjoyNzAwMDAwMDAwMDAwfX0=",
+          "dependencies": [
+            "azurerm_network_interface.nic",
+            "azurerm_public_ip.public_ip",
+            "azurerm_resource_group.rg",
+            "azurerm_subnet.subnet",
+            "azurerm_virtual_network.vnet",
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm02\"]",
+      "mode": "managed",
+      "type": "local_file",
+      "name": "private_key",
+      "provider": "provider[\"registry.terraform.io/hashicorp/local\"]",
+      "instances": [
+        {
+          "schema_version": 0,
+          "attributes": {
+            "content": "-----BEGIN RSA PRIVATE KEY-----\n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\n-----END RSA PRIVATE KEY-----\n",
+            "content_base64": null,
+            "content_base64sha256": "WKLVCKCTjStYZi9ohysY6fGGbS4JbNWzGmnzDYS/QR4=",
+            "content_base64sha512": "k/kJZXlVUrHj4wU2GW2PO+Xm4EpQyJ0KEPjeLhCRIpo44dFHSoSp5SW3ThxMushpyjrtOV/FKBbYTBjbvWZ9qg==",
+            "content_md5": "8412be78a10450cbef2c4a8f4de4223d",
+            "content_sha1": "cd58d2eccba91bfceb19200f1f66ef71ed24ed8a",
+            "content_sha256": "58a2d508a0938d2b58662f68872b18e9f1866d2e096cd5b31a69f30d84bf411e",
+            "content_sha512": "93f90965795552b1e3e30536196d8f3be5e6e04a50c89d0a10f8de2e1091229a38e1d1474a84a9e525b74e1c4cbac869ca3aed395fc52816d84c18dbbd667daa",
+            "directory_permission": "0777",
+            "file_permission": "0600",
+            "filename": "modules/azure_vm/ssh_keys/azr-srv-ubuntu-02_key.pem",
+            "id": "cd58d2eccba91bfceb19200f1f66ef71ed24ed8a",
+            "sensitive_content": null,
+            "source": null
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "sensitive_content"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "content"
+              }
+            ]
+          ],
+          "dependencies": [
+            "module.ubuntu_vm.tls_private_key.ssh_key"
+          ]
+        }
+      ]
+    },
+    {
+      "module": "module.ubuntu_vm[\"ubuntu-vm02\"]",
+      "mode": "managed",
+      "type": "tls_private_key",
+      "name": "ssh_key",
+      "provider": "provider[\"registry.terraform.io/hashicorp/tls\"]",
+      "instances": [
+        {
+          "schema_version": 1,
+          "attributes": {
+            "algorithm": "RSA",
+            "ecdsa_curve": "P224",
+            "id": "fb276bb484775c7b79dd076c58b88b81d0aef71b",
+            "private_key_openssh": "-----BEGIN OPENSSH PRIVATE KEY-----\n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\n-----END OPENSSH PRIVATE KEY-----\n",
+            "private_key_pem": "-----BEGIN RSA PRIVATE KEY-----\n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\n-----END RSA PRIVATE KEY-----\n",
+            "private_key_pem_pkcs8": "-----BEGIN PRIVATE KEY-----\n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\n8xHjAh/gfkx2niRhrzmXIPdVaDLMeNs=\n-----END PRIVATE KEY-----\n",
+            "public_key_fingerprint_md5": "56:3c:92:0c:51:a1:5a:80:d3:17:4f:6d:3f:15:38:f6",
+            "public_key_fingerprint_sha256": "SHA256:UNQyP+KiRnUoloPvExZq07Dc3IDUjKRXHstsZ+dC/RQ",
+            "public_key_openssh": "ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCsdGzf2na+4dT/yynphKN4YNBa+3hYPVEJTVCxUXHJrOkLX6cSPdwIX7Y/wIpQmSOI9ShQo8ZQfwcq90OeYX+mXpytvaw259tha+HhB1+puMqX/DjvDkUP6RNh0Vw+uJRu4TwKO5jFZLlpEpqekSqFWoN4EXwS2pBHLrmDjRqlpX1wd5QhZzl/rnqMh15SokErnQMJ8EZnGhAcVb5QO9ccNI5XWksO0US7W1oHreFisZcFYyDiaBqr8mDLflGYEIAjVGV9tOgA2ra2nFi/E8/3qqngi+V/+C++L3gnkkn2AUgZ5ppKz9H9bNvOdF0eNMyEFplXSA3zst7NLeOCeeyl2QuJ8bsR0AZ1DnZA74Dpx2RVzl3c+shojo+nQ18AVNHamhLGp+RHNdbA7v47SCSz1hCb/MmVkHuv9Ts3PxkGAI6V+EMaDI7GHxtD6DpkI4IpJ2ha6O3e10yuw+Gm0DXCnueIu+SS9BYumsZTlL1UK0XlhahB1NC9g/sDbAvJFS5uLQt1src6ZtNJjYD6oQ0J6mjr129owfhyO3tG1QOuc4ErptVCQy57gGNdKa5F+BfYM/wBeBMkhEHNHSkXg4xlEHdQ0T6JTbfKNxYp4O0frgBTBM98Wds5ROky7V9csBNlDaHOr8Rq2fGp1LMXo8p/WkwvOKbsI86lAFIkFJ84/w==\n",
+            "public_key_pem": "-----BEGIN PUBLIC KEY-----\nMIICIjANBgkqhkiG9w0BAQEFAAOCAg8AMIICCgKCAgEArHRs39p2vuHU/8sp6YSj\neGDQWvt4WD1RCU1QsVFxyazpC1+nEj3cCF+2P8CKUJkjiPUoUKPGUH8HKvdDnmF/\npl6crb2sNufbYWvh4QdfqbjKl/w47w5FD+kTYdFcPriUbuE8CjuYxWS5aRKanpEq\nhVqDeBF8EtqQRy65g40apaV9cHeUIWc5f656jIdeUqJBK50DCfBGZxoQHFW+UDvX\nHDSOV1pLDtFEu1taB63hYrGXBWMg4mgaq/Jgy35RmBCAI1RlfbToANq2tpxYvxPP\n96qp4Ivlf/gvvi94J5JJ9gFIGeaaSs/R/WzbznRdHjTMhBaZV0gN87LezS3jgnns\npdkLifG7EdAGdQ52QO+A6cdkVc5d3PrIaI6Pp0NfAFTR2poSxqfkRzXWwO7+O0gk\ns9YQm/zJlZB7r/U7Nz8ZBgCOlfhDGgyOxh8bQ+g6ZCOCKSdoWujt3tdMrsPhptA1\nwp7niLvkkvQWLprGU5S9VCtF5YWoQdTQvYP7A2wLyRUubi0LdbK3OmbTSY2A+qEN\nCepo69dvaMH4cjt7RtUDrnOBK6bVQkMue4BjXSmuRfgX2DP8AXgTJIRBzR0pF4OM\nZRB3UNE+iU23yjcWKeDtH64AUwTPfFnbOUTpMu1fXLATZQ2hzq/EatnxqdSzF6PK\nf1pMLzim7CPOpQBSJBSfOP8CAwEAAQ==\n-----END PUBLIC KEY-----\n",
+            "rsa_bits": 4096
+          },
+          "sensitive_attributes": [
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_pem_pkcs8"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_openssh"
+              }
+            ],
+            [
+              {
+                "type": "get_attr",
+                "value": "private_key_pem"
+              }
+            ]
+          ]
+        }
+      ]
+    }
+  ],
+  "check_results": [
+    {
+      "object_kind": "var",
+      "config_addr": "var.reboot_setting",
+      "status": "pass",
+      "objects": [
+        {
+          "object_addr": "var.reboot_setting",
+          "status": "pass"
+        }
+      ]
+    }
+  ]
+}

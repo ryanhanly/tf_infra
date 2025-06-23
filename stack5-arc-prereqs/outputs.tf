@@ -25,8 +25,8 @@ output "arc_setup_summary" {
   description = "Summary of Arc prerequisites"
   value = {
     resource_group = azurerm_resource_group.arc_rg.name
-    app_name      = var.arc_sp_name
-    sp_client_id  = local.arc_sp_data.clientId
-    location      = azurerm_resource_group.arc_rg.location
+    app_name       = var.arc_sp_name
+    sp_client_id   = local.arc_sp_data.clientId
+    location       = azurerm_resource_group.arc_rg.location
   }
 }

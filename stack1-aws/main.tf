@@ -1,15 +1,15 @@
 terraform {
   backend "s3" {
-    bucket         = "stack1-terraform-states"
-    key            = "stack1/terraform.tfstate"
-    region         = "eu-west-2"
-    use_lockfile   = true
-    encrypt        = true
+    bucket       = "stack1-terraform-states"
+    key          = "stack1/terraform.tfstate"
+    region       = "eu-west-2"
+    use_lockfile = true
+    encrypt      = true
   }
 
   required_providers {
     aws = {
-      source = "hashicorp/aws"
+      source  = "hashicorp/aws"
       version = "~> 5.0"
     }
     azurerm = {
@@ -17,11 +17,11 @@ terraform {
       version = "~> 4.0"
     }
     tls = {
-      source = "hashicorp/tls"
+      source  = "hashicorp/tls"
       version = "~> 4.0"
     }
     local = {
-       source = "hashicorp/local"
+      source  = "hashicorp/local"
       version = "~> 2.4"
     }
   }
@@ -135,11 +135,6 @@ resource "tls_private_key" "ssh_key" {
   rsa_bits  = 4096
 }
 
-locals {
-  server_names = {
-    for k, v in var.server_instances : k => "aws-srv-ubuntu-${format("%02d", v.index)}"
-  }
-}
 
 # Create a key pair in AWS for each server using the server name
 resource "aws_key_pair" "server_key" {
@@ -160,13 +155,7 @@ resource "local_file" "private_key" {
   }
 }
 
-# Create user data script for Ubuntu configuration
-locals {
-  ubuntu_user_data = base64encode(templatefile("${path.module}/ubuntu-userdata.sh", {
-    mirror_server_ip = var.mirror_server_ip
-  }))
-}
-
+# EC2 Instrances
 resource "aws_instance" "ubuntu_servers" {
   for_each = var.server_instances
 
@@ -184,15 +173,7 @@ resource "aws_instance" "ubuntu_servers" {
     encrypted   = true
   }
 
-  tags = merge(
-    {
-      Name = local.server_names[each.key]
-      Environment = "Development"
-      OS = "Ubuntu"
-      OSVersion = "22.04"
-    },
-    each.value.additional_tags
-  )
+  tags = local.server_tags[each.key]
 }
 
 # Create Elastic IPs for each server
@@ -204,7 +185,7 @@ resource "aws_eip" "server_eips" {
 
   tags = merge(
     {
-      Name = "${local.server_names[each.key]}-eip"
+      Name        = "${local.server_names[each.key]}-eip"
       Environment = "Development"
     },
     each.value.tags

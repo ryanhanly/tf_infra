@@ -43,7 +43,7 @@ output "debug_instance_details" {
       public_ip   = instance.public_ip
       elastic_ip  = aws_eip.server_eips[k].public_ip
       public_dns  = instance.public_dns
-      state      = instance.instance_state
+      state       = instance.instance_state
     }
   }
 }

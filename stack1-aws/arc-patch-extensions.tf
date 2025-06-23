@@ -5,7 +5,7 @@
 data "azurerm_arc_machine" "aws_arc_servers" {
   for_each = aws_instance.ubuntu_servers
 
-  name                = each.value.id  # AWS instance ID becomes Arc machine name
+  name                = each.value.id # AWS instance ID becomes Arc machine name
   resource_group_name = var.arc_resource_group
 
   depends_on = [null_resource.install_arc_agent]
@@ -15,11 +15,11 @@ data "azurerm_arc_machine" "aws_arc_servers" {
 resource "azurerm_arc_machine_extension" "patch_management" {
   for_each = data.azurerm_arc_machine.aws_arc_servers
 
-  name           = "PatchManagement"
-  location       = var.azure_region
-  arc_machine_id = each.value.id
-  publisher      = "Microsoft.Azure.Extensions"
-  type           = "CustomScript"
+  name                 = "PatchManagement"
+  location             = var.azure_region
+  arc_machine_id       = each.value.id
+  publisher            = "Microsoft.Azure.Extensions"
+  type                 = "CustomScript"
   type_handler_version = "2.1"
 
   settings = jsonencode({

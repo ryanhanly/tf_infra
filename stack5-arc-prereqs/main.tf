@@ -53,7 +53,7 @@ resource "null_resource" "create_arc_sp" {
 
 # Read the service principal output
 data "local_file" "arc_sp_output" {
-  filename = "${path.module}/arc-sp-output.json"
+  filename   = "${path.module}/arc-sp-output.json"
   depends_on = [null_resource.create_arc_sp]
 }
 

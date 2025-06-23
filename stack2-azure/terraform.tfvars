@@ -1,8 +1,20 @@
-# stack2-azure/terraform.tfvars
-# Mirror server IP (set this after deploying stack4)
-mirror_server_ip = "172.16.1.4"  # Update with actual mirror server private IP
+# stack2-azure/terraform.tfvars.example
+# Example configuration - copy to terraform.tfvars and update values
 
-# Ubuntu VM configuration
+# Azure Configuration
+location            = "UK South"
+resource_group_name = "azr-ubuntu-vms-rg"
+environment         = "development"
+
+# Naming Conventions
+srvprefix      = "azr-srv"
+infprefix      = "azr-inf"
+admin_username = "ubuntu"
+
+# Mirror server IP (stack4 VM IP)
+mirror_server_ip = "172.16.1.4"
+
+# Virtual Machine Configuration
 virtual_machines = {
   "ubuntu-vm01" = {
     vm_size        = "Standard_B2s"
@@ -26,26 +38,23 @@ virtual_machines = {
   }
 }
 
-# Infrastructure settings
-location            = "UK South"
-resource_group_name = "azr-ubuntu-vms-rg"
-environment        = "development"
+# Cost Optimization
+enable_auto_shutdown             = true
+auto_shutdown_time               = "1800"
+auto_shutdown_timezone           = "GMT Standard Time"
+auto_shutdown_notification_email = "your-email@example.com"
 
-# Cost optimization
-enable_auto_shutdown = true
-auto_shutdown_time   = "1800"
+# Azure Update Manager Configuration
+maintenance_start_datetime      = "2025-07-15 22:00"
+maintenance_expiration_datetime = "2026-07-15 22:00"
+maintenance_duration            = "03:00"
+maintenance_timezone            = "GMT Standard Time"
+maintenance_recurrence          = "Month Second Tuesday"
 
-# Azure Update Manager settings
-maintenance_start_datetime     = "2025-07-15 22:00"  # Start patches at 10 PM
-maintenance_expiration_datetime = "2026-07-15 22:00"  # Valid for 1 year
-maintenance_duration          = "03:00"              # 3 hour window
-maintenance_timezone          = "GMT Standard Time"
-maintenance_recurrence        = "Month Second Tuesday"  # Monthly patching on 2nd Tuesday
-
-# Update classifications
+# Update Classifications
 linux_classifications_to_include = ["Critical", "Security"]
-linux_packages_to_include       = []  # Empty means all packages
-linux_packages_to_exclude       = ["kernel*"]  # Example: exclude kernel updates
+linux_packages_to_include        = []
+linux_packages_to_exclude        = ["kernel*"]
 
-# Reboot behavior
-reboot_setting = "IfRequired"  # Reboot only if required by updates
+# Reboot Behavior
+reboot_setting = "IfRequired"

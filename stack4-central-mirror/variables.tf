@@ -122,8 +122,8 @@ variable "data_disk_size_gb" {
 }
 
 variable "tags" {
-  type        = map(string)
-  default     = {
+  type = map(string)
+  default = {
     Environment  = "Lab"
     Service      = "UbuntuMirror"
     Purpose      = "UbuntuRepositoryMirror"
@@ -137,7 +137,7 @@ variable "tags" {
 # Azure Update Manager variables for Mirror Server
 variable "maintenance_start_datetime" {
   type        = string
-  default     = "2025-07-01 01:00"  # 1 AM - earlier than test VMs
+  default     = "2025-07-01 01:00" # 1 AM - earlier than test VMs
   description = "Start date and time for maintenance window (YYYY-MM-DD HH:MM format)"
 }
 
@@ -149,7 +149,7 @@ variable "maintenance_expiration_datetime" {
 
 variable "maintenance_duration" {
   type        = string
-  default     = "02:00"  # Shorter window for mirror server
+  default     = "02:00" # Shorter window for mirror server
   description = "Duration of maintenance window (HH:MM format)"
 }
 
@@ -161,7 +161,7 @@ variable "maintenance_timezone" {
 
 variable "maintenance_recurrence" {
   type        = string
-  default     = "Month First Sunday"  # Different day from test VMs
+  default     = "Month First Sunday" # Different day from test VMs
   description = "Recurrence pattern (e.g., 'Month First Sunday', 'Week', '1Day')"
 }
 
@@ -179,7 +179,7 @@ variable "linux_packages_to_include" {
 
 variable "linux_packages_to_exclude" {
   type        = list(string)
-  default     = ["nginx*"]  # Exclude nginx to avoid service disruption
+  default     = ["nginx*"] # Exclude nginx to avoid service disruption
   description = "Linux package names to exclude"
 }
 
