@@ -71,24 +71,26 @@ variable "virtual_machines" {
     vm_size        = string
     admin_username = string
     index          = number
+    business_unit  = string
+    environment    = string
     tags           = map(string)
   }))
   description = "Map of virtual machines to create with their configurations"
-  # validation {
-  #   condition = alltrue([
-  #     for vm in values(var.virtual_machines) :
-  #     contains(module.shared_values.allowed_business_units, vm.business_unit)
-  #   ])
-  #   error_message = "Business unit must be one of: ${join(", ", module.shared_values.allowed_business_units)}."
-  # }
+  validation {
+    condition = alltrue([
+      for vm in values(var.virtual_machines) :
+      contains(module.shared_values.allowed_business_units, vm.business_unit)
+    ])
+    error_message = "Business unit must be one of: ${join(", ", module.shared_values.allowed_business_units)}."
+  }
 
-  # validation {
-  #   condition = alltrue([
-  #     for vm in values(var.virtual_machines) :
-  #     contains(module.shared_values.allowed_environments, vm.environment)
-  #   ])
-  #   error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
-  # }
+  validation {
+    condition = alltrue([
+      for vm in values(var.virtual_machines) :
+      contains(module.shared_values.allowed_environments, vm.environment)
+    ])
+    error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
+  }
 }
 
 # Cost optimization
