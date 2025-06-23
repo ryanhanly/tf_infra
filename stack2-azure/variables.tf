@@ -55,10 +55,10 @@ variable "admin_username" {
   description = "Standard Admin Username"
 }
 
-# variable "environment" {
-#   type        = string
-#   description = "Define the operating environment"
-# }
+variable "environment" {
+  type        = string
+  description = "Define the operating environment"
+}
 
 variable "mirror_server_ip" {
   type        = string
