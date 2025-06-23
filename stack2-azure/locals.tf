@@ -1,15 +1,20 @@
-# locals.tf - Enforce standardized tagging
+# Replace your current locals.tf with:
 locals {
-  # Environment abbreviation mapping
   environment_abbrev = module.shared_values.environment_abbreviations
 
-  # Generate mandatory tags for each VM
-  mandatory_tags = {
-    BU          = var.business_unit
-    Environment = var.environment
-    PatchGroup  = "AUM-${var.business_unit}-${local.environment_abbrev[var.environment]}"
-    OS          = "Ubuntu"
-    Cloud       = "Azure"
-    ManagedBy   = "Terraform"
+  # Generate tags per VM
+  vm_tags = {
+    for k, v in var.virtual_machines : k => merge(
+      {
+        BU          = v.business_unit
+        Environment = v.environment
+        PatchGroup  = "AUM-${v.business_unit}-${local.environment_abbrev[v.environment]}"
+        OS          = "Ubuntu"
+        Cloud       = "Azure"
+        ManagedBy   = "Terraform"
+        Name        = "azr-srv-ubuntu-${format("%02d", v.index)}"
+      },
+      v.tags
+    )
   }
 }

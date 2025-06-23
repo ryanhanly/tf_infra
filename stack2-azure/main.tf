@@ -120,11 +120,5 @@ module "ubuntu_vm" {
   auto_shutdown_timezone           = var.auto_shutdown_timezone
   auto_shutdown_notification_email = var.auto_shutdown_notification_email
 
-  tags = merge(
-    local.mandatory_tags,
-    each.value.tags,
-    {
-      Name = "azr-srv-ubuntu-${format("%02d", each.value.index)}"
-    }
-  )
+  tags = local.vm_tags[each.key]
 }

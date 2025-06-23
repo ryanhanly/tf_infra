@@ -55,10 +55,10 @@ variable "admin_username" {
   description = "Standard Admin Username"
 }
 
-variable "environment" {
-  type        = string
-  description = "Define the operating environment"
-}
+# variable "environment" {
+#   type        = string
+#   description = "Define the operating environment"
+# }
 
 variable "mirror_server_ip" {
   type        = string
@@ -74,21 +74,21 @@ variable "virtual_machines" {
     tags           = map(string)
   }))
   description = "Map of virtual machines to create with their configurations"
-  validation {
-    condition = alltrue([
-      for vm in values(var.virtual_machines) :
-      contains(module.shared_values.allowed_business_units, vm.business_unit)
-    ])
-    error_message = "Business unit must be one of: ${join(", ", module.shared_values.allowed_business_units)}."
-  }
+  # validation {
+  #   condition = alltrue([
+  #     for vm in values(var.virtual_machines) :
+  #     contains(module.shared_values.allowed_business_units, vm.business_unit)
+  #   ])
+  #   error_message = "Business unit must be one of: ${join(", ", module.shared_values.allowed_business_units)}."
+  # }
 
-  validation {
-    condition = alltrue([
-      for vm in values(var.virtual_machines) :
-      contains(module.shared_values.allowed_environments, vm.environment)
-    ])
-    error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
-  }
+  # validation {
+  #   condition = alltrue([
+  #     for vm in values(var.virtual_machines) :
+  #     contains(module.shared_values.allowed_environments, vm.environment)
+  #   ])
+  #   error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
+  # }
 }
 
 # Cost optimization
@@ -167,15 +167,15 @@ variable "reboot_setting" {
 }
 
 # Required Tagging Variables
-variable "business_unit" {
-  type        = string
-  description = "Business Unit (e.g., SC, MSH, TMS)"
+# variable "business_unit" {
+#   type        = string
+#   description = "Business Unit (e.g., SC, MSH, TMS)"
 
-  validation {
-    condition     = contains(["SC", "MSH", "TMS"], var.business_unit)
-    error_message = "Business unit must be one of: SC, MSH, TMS."
-  }
-}
+#   validation {
+#     condition     = contains(["SC", "MSH", "TMS"], var.business_unit)
+#     error_message = "Business unit must be one of: SC, MSH, TMS."
+#   }
+# }
 
 variable "patch_group" {
   type        = string
