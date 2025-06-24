@@ -72,3 +72,26 @@ resource "null_resource" "install_arc_agent" {
     ]
   }
 }
+
+# Tag Arc machines with AWS metadata (safe for existing machines)
+resource "null_resource" "tag_arc_machines" {
+  for_each = aws_instance.ubuntu_servers
+
+  # Trigger only when tags change
+  triggers = {
+    bu          = local.server_tags[each.key].BU
+    environment = local.server_tags[each.key].Environment
+    instance_id = each.value.id
+  }
+
+  provisioner "local-exec" {
+    command = <<-EOT
+      echo "Tagging Arc machine: ${each.value.id}"
+      az resource tag \
+        --tags BU="${local.server_tags[each.key].BU}" Environment="${local.server_tags[each.key].Environment}" \
+        --resource-group ${var.arc_resource_group} \
+        --name ${each.value.id} \
+        --resource-type Microsoft.HybridCompute/machines || echo "Tagging failed - machine may not be Arc-enabled yet"
+    EOT
+  }
+}
