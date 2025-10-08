@@ -52,14 +52,22 @@ variable "azure_vm_names" {
   description = "List of Azure VM names"
 }
 
-variable "business_unit_schedules" {
+variable "patch_schedules" {
   type = map(object({
     start_datetime    = string
     duration         = string
     recurrence       = string
     exclude_packages = list(string)
   }))
-  description = "Patch schedules per business unit"
+  description = "Patch schedules per environment type (Development, Test, Production)"
+
+  validation {
+    condition = alltrue([
+      for env in keys(var.patch_schedules) :
+      contains(module.shared_values.allowed_environments, env)
+    ])
+    error_message = "Patch schedule keys must be valid environments: ${join(", ", module.shared_values.allowed_environments)}."
+  }
 }
 
 variable "server_bu_mapping" {
