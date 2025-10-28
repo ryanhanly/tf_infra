@@ -64,7 +64,7 @@ variable "server_instances" {
     error_message = "Environment must be one of: ${join(", ", module.shared_values.allowed_environments)}."
   }
 }
-
+/* not required, moving to Ansible --- IGNORE ---
 # Azure Arc variables
 variable "azure_subscription_id" {
   type        = string
@@ -96,3 +96,4 @@ variable "azure_region" {
   type        = string
   description = "Azure region for Arc resources"
 }
+*/

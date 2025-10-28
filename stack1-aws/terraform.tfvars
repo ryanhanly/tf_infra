@@ -20,8 +20,8 @@ server_instances = {
   "ubuntu-server1" = {
     instance_type = "t3.medium"
     index         = 1
-    bu           = "SC"
-    environment  = "Development"
+    bu            = "SC"
+    environment   = "Development"
     additional_tags = {
       Purpose = "Development"
     }
@@ -46,10 +46,11 @@ server_instances = {
   }
 }
 
+
 # Azure Arc Configuration
-arc_resource_group    = "rg-arc-aws-servers"
-azure_region          = "UK South"
-azure_subscription_id = "810ef0ef-448f-48b1-88b9-1f3f0f26a320"
-arc_client_id         = "64e1338f-0ccc-4acb-83d7-3d15d68511a1"
-arc_client_secret     = "5RZ8Q~YZK12LfzASsLfU0Gy2jaBiJIP3sIc-Aay0"
-azure_tenant_id       = "479bd166-4e88-4b05-8091-599ef34318e0"
+# arc_resource_group    = "rg-arc-aws-servers"
+# azure_region          = "UK South"
+# azure_subscription_id = "810ef0ef-448f-48b1-88b9-1f3f0f26a320"
+# arc_client_id         = "64e1338f-0ccc-4acb-83d7-3d15d68511a1"
+# arc_client_secret     = "5RZ8Q~YZK12LfzASsLfU0Gy2jaBiJIP3sIc-Aay0"
+# azure_tenant_id       = "479bd166-4e88-4b05-8091-599ef34318e0"
