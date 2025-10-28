@@ -6,6 +6,7 @@
 terraform.tfvars
 *.log
 stack2-azure/terraform.tfvars
+terraform.tfvars.locals
 
 # Private keys and secrets
 *.pem
