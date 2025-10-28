@@ -114,7 +114,3 @@ arc_setup_summary = {
   "resource_group" = "rg-arc-aws-servers"
   "sp_client_id" = "41f45bbc-3c67-40f1-8462-51d391eb100c"
 }
-arc_sp_object_id = "41f45bbc-3c67-40f1-8462-51d391eb100c"
-ryanhanly@Ryans-MacBook-Pro stack5-arc-prereqs % terraform output -raw arc_client_secret
-3ou8Q~4JR7rnySWJ.GL3xsr8QW_s5rpdkMLryaRQ%
-ryanhanly@Ryans-MacBook-Pro stack5-arc-prereqs %
