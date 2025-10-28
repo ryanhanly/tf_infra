@@ -22,8 +22,23 @@ terraform {
   }
 }
 
+module "vm_name" {
+  source = "../../shared/modules/vm_name_generator"
+
+  cloud_abbrev  = "aw"
+  region_abbrev = "use"
+  os_code       = "lnx"
+  bu_abbrev     = "ret"
+  env_abbrev    = "dev"
+  server_num    = 1
+
+}
+
 provider "aws" {
   region = var.aws_region
+  access_key = var.aws_access_key_id
+  secret_key = var.aws_secret_access_key
+  token = var.aws_session_token
 }
 
 # Data source to find Ubuntu AMIs

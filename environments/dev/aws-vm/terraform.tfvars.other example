@@ -1,0 +1,55 @@
+# stack1-aws/terraform.tfvars
+
+# AWS Configuration
+aws_region  = "eu-west-2"
+name_prefix = "aws-infra"
+
+# Network Configuration
+vpc_cidr    = "10.0.0.0/16"
+subnet_cidr = "10.0.1.0/24"
+
+# Security - restrict in production
+ssh_allowed_cidr = ["0.0.0.0/0"]
+
+# Mirror server IP (set after deploying stack4)
+mirror_server_ip = "172.166.188.125"
+
+# Server Configuration
+server_instances = {
+  "ubuntu-server1" = {
+    instance_type = "t3.medium"
+    index         = 1
+    bu            = "SC"
+    environment   = "Development"
+    additional_tags = {
+      Purpose = "Development"
+    }
+  },
+  "ubuntu-server2" = {
+    instance_type = "t3.medium"
+    index         = 2
+    bu            = "MSH"
+    environment   = "Test"
+    additional_tags = {
+      Purpose = "Database Server"
+    }
+  },
+  "ubuntu-server3" = {
+    instance_type = "t3.medium"
+    index         = 3
+    bu            = "TMS"
+    environment   = "Production"
+    additional_tags = {
+      Purpose = "Web Server"
+    }
+  }
+}
+
+
+# Azure Arc Configuration
+# arc_resource_group    = "arc_resource_group"
+# azure_region          = "azure_region"
+# azure_subscription_id = "azure_subscription_id"
+# arc_client_id         = "arc_client_id"
+# arc_client_secret     = "arc_client_secret"
+# azure_tenant_id       = "azure_tenant_id"

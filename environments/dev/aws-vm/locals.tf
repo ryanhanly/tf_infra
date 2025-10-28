@@ -30,8 +30,10 @@ locals {
 }
 
 # Create user data script for Ubuntu configuration
+/* --- IGNORE ---
 locals {
   ubuntu_user_data = base64encode(templatefile("${path.module}/ubuntu-userdata.sh", {
     mirror_server_ip = var.mirror_server_ip
   }))
 }
+*/
