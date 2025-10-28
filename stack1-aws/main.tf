@@ -1,13 +1,4 @@
 terraform {
-  cloud {
-
-    organization = "seneca_org"
-
-    workspaces {
-      name = "stack1-aws-core"
-    }
-  }
-
   required_providers {
     aws = {
       source  = "hashicorp/aws"
