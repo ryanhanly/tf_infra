@@ -17,3 +17,5 @@ arc-sp-output.json
 *.key
 *id_rsa*
 *id_ed25519*
+
+dev_notes.md
