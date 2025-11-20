@@ -2,24 +2,20 @@ terraform {
   cloud {
     organization = "seneca_org"
     workspaces {
-      name = "stack1-aws-core"
+      name = "dev-aws-networks"
     }
   }
+
   required_providers {
     aws = {
       source  = "hashicorp/aws"
       version = "~> 5.0"
     }
-
-    tls = {
-      source  = "hashicorp/tls"
-      version = "~> 4.0"
-    }
-    local = {
-      source  = "hashicorp/local"
-      version = "~> 2.4"
-    }
   }
+}
+
+module "shared_values" {
+  source = "../../shared"
 }
 
 module "vm_name" {
