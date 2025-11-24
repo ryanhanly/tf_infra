@@ -1,3 +1,13 @@
+# Underconstruction
+The is project is under a construction. It was initially an Azure Update Manager for server patching (Win and Linux) along with ARC deployment as the POC is across Azure and AWS (Azure ARC Agent deployment)
+
+The updates to this project is
+ 1. restrcutured to support Terragrunt
+ 2. Introduce GCP - so we get a feel for multi-cloud IaC build management
+ 3. Considering the hosting of AWX in Azure and then get some Day2 Config Management.
+
+I have chosen to make this change, because I want to make this focus on multi-cloud. It will be on pause for now, while I prep for some other exams. Terrafrom Assoc and then AWS AI Practitioner.
+
 # Terraform Infrastructure Code
 This repository contains Terraform configurations for deploying cloud infrastructure across multiple stacks (AWS and Azure). All deployments are designed for educational purposes only, demonstrating infrastructure as code (IaC) practices. State files are stored remotely on HashiCorp Cloud Platform (HCP) Terraform for security and collaboration.
 
