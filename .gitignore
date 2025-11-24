@@ -9,15 +9,80 @@ stack2-azure/terraform.tfvars
 terraform.tfvars.locals
 
 # Private keys and secrets
+*.p12
 *.pem
+*.key
 *_key.pem
 ssh_keys/
 **/ssh_keys/
 arc-sp-output.json
-
-# Other sensitive files
-*.key
 *id_rsa*
 *id_ed25519*
 
 dev_notes.md
+
+# ─────────────────────────────────────────────────────────────
+# Python / venv / packaging
+# ─────────────────────────────────────────────────────────────
+# Virtual environment
+venv/
+.venv/
+env/
+ENV/
+
+# Python cache & bytecode
+__pycache__/
+*.py[cod]
+*$py.class
+*.pyo
+*.pyd
+
+# Distribution / packaging
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Pipenv / Poetry / Pipfile
+Pipfile.lock
+poetry.lock
+
+
+# ─────────────────────────────────────────────────────────────
+# IDE / Editor junk
+# ─────────────────────────────────────────────────────────────
+# VSCode
+.vscode/
+!.vscode/settings.json    # ← optional
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+
+# PyCharm
+.idea/
+*.iws
+*.iml
+*.ipr
+
+# Mac / Linux
+.DS_Store
+*.swp
+*~
+
+# ─────────────────────────────────────────────────────────────
+# Optional: misc
+# ─────────────────────────────────────────────────────────────
+.env
+.env.local
+.local
